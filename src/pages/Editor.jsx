@@ -1777,6 +1777,9 @@ function SortableClipTile({ clip, zoom, isSelected, onSelect, onDelete }) {
       {/* Title + duration */}
       <div className="flex flex-col justify-center px-2 min-w-0 pointer-events-none">
         <span className="text-[10px] text-white font-medium truncate leading-tight">{label}</span>
+        {clip.file?.size && (
+          <span className="text-[8px] text-[#888] leading-none">{(clip.file.size / 1024 / 1024).toFixed(1)} MB</span>
+        )}
         <div className="flex items-center gap-1 mt-0.5">
           <span className="text-[9px] text-[#e87040] tabular-nums">{formatDuration(effectiveDuration(clip))}</span>
           {clip.speed && clip.speed !== 1 && (

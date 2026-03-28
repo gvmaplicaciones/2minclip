@@ -189,6 +189,7 @@ export default function Landing({ lang }) {
                           />
                         )}
                         <span className="text-xs text-[#ccc] truncate flex-1 min-w-0">{clip.name}</span>
+                        <span className="text-xs text-[#555] flex-shrink-0">{(clip.file.size / 1024 / 1024).toFixed(1)} MB</span>
                         <span className="text-xs text-[#555] flex-shrink-0">{formatDuration(clip.duration)}</span>
                         <button
                           className="text-[#555] hover:text-[#e87040] flex-shrink-0 text-lg leading-none ml-1"
