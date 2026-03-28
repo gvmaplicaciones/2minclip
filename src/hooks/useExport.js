@@ -102,7 +102,7 @@ function buildFilterComplex({ clipInputs, clipAudioPresence, audioInputs, imgInp
       af += `[ca${i}]`
       fc.push(af)
     } else {
-      fc.push(`aevalsrc=0:c=stereo:r=44100:d=${srcDur.toFixed(4)}[ca${i}]`)
+      fc.push(`anullsrc=r=44100:cl=stereo,atrim=duration=${srcDur.toFixed(4)},asetpts=PTS-STARTPTS[ca${i}]`)
     }
     aStream.push(`[ca${i}]`)
   }
