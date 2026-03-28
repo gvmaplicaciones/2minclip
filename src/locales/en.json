@@ -165,6 +165,7 @@
   },
   "errors": {
     "invalid_format": "Unsupported format. Use MP4, MOV or WebM for video.",
-    "invalid_audio_format": "Unsupported audio format. Use MP3, AAC or WAV."
+    "invalid_audio_format": "Unsupported audio format. Use MP3, AAC or WAV.",
+    "file_too_large": "Clip too large ({{mb}} MB). Maximum is {{max}} MB per clip."
   }
 }

@@ -49,6 +49,11 @@ export default function Landing({ lang }) {
         setUploadError(t('errors.invalid_format'))
         continue
       }
+      const MAX_CLIP_MB = 200
+      if (f.size > MAX_CLIP_MB * 1024 * 1024) {
+        setUploadError(t('errors.file_too_large', { mb: Math.round(f.size / 1024 / 1024), max: MAX_CLIP_MB }))
+        continue
+      }
       toProcess.push(f)
     }
     if (toProcess.length === 0) return

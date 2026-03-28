@@ -165,6 +165,7 @@
   },
   "errors": {
     "invalid_format": "Formato no compatible. Usa MP4, MOV o WebM para vídeo.",
-    "invalid_audio_format": "Formato de audio no compatible. Usa MP3, AAC o WAV."
+    "invalid_audio_format": "Formato de audio no compatible. Usa MP3, AAC o WAV.",
+    "file_too_large": "Clip demasiado grande ({{mb}} MB). El máximo es {{max}} MB por clip."
   }
 }

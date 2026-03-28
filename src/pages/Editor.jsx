@@ -590,6 +590,11 @@ function EditorShell({ ratio, navigate }) {
       setErrorMsg(t('errors.invalid_format'))
       return
     }
+    const MAX_CLIP_MB = 200
+    if (file.size > MAX_CLIP_MB * 1024 * 1024) {
+      setErrorMsg(t('errors.file_too_large', { mb: Math.round(file.size / 1024 / 1024), max: MAX_CLIP_MB }))
+      return
+    }
     setErrorMsg('')
 
     const { duration, thumbnail, videoWidth, videoHeight } = await readVideoMeta(file)
