@@ -41,6 +41,7 @@ El problema que resuelve: CapCut, InShot y similares se han vuelto demasiado com
 - **Silenciar clip**: botón dentro del panel desplegable del clip.
 - **Dividir pista de audio**: misma lógica que dividir clips de vídeo — cabezal + DIVIDIR. Permite bajar música en el tramo final cortando la pista y ajustando volumen por tramo.
 - **Fade out de audio**: botón en cada pista de audio para aplicar fundido de salida (FFmpeg: filtro `afade`). Caso de uso principal: bajar suavemente la música al final del vídeo sin tener que cortar manualmente.
+- **Voltear y rotar clip**: dentro del panel desplegable del clip. Voltear horizontal (`hflip`) y vertical (`vflip`) para efecto espejo. Rotar 90° (`transpose`) para corregir orientación de vídeos grabados en horizontal. FFmpeg — una línea por opción, coste técnico mínimo.
 - **Landing page como Tarea 0**: antes del editor hay una página de presentación optimizada para SEO. No se entra directamente al editor. La landing tiene el mensaje, captura del mockup y el botón de empezar. Es lo que Google indexa y lo que convierte visitas en usuarios. Diseño coherente con el mockup HTML existente (`clipflow_mockup_v5.html`).
 
 ---
@@ -49,8 +50,10 @@ El problema que resuelve: CapCut, InShot y similares se han vuelto demasiado com
 
 - [ ] Pantalla de selección de formato antes del editor: 9:16 (Reels/TikTok), 16:9 (YouTube), 1:1 (Instagram)
 - [ ] Canvas fijo en el editor según el formato elegido — no cambia una vez dentro
-- [ ] Subir clips de vídeo desde la galería del móvil (MP4, MOV, WebM únicamente)
-- [ ] Validación de formato al subir — error claro si el archivo no es compatible
+- [ ] Zona de subida múltiple en landing — arrastra o selecciona varios clips a la vez (MP4, MOV, WebM)
+- [ ] Una vez subido al menos un clip, se desbloquea el botón "Elegir formato y empezar a editar"
+- [ ] Los clips de la landing se pasan al editor manteniendo el orden de subida
+- [ ] En el editor se pueden añadir clips adicionales de uno en uno con el botón "+ Clip"
 - [ ] Los clips se distribuyen dentro del canvas — si no llenan el espacio el resto es negro
 - [ ] Timeline horizontal con los clips en orden
 - [ ] Reordenar clips arrastrando (mantener pulsado + arrastrar)
@@ -61,6 +64,8 @@ El problema que resuelve: CapCut, InShot y similares se han vuelto demasiado com
 - [ ] Añadir una pista de audio propia (MP3, AAC, WAV)
 - [ ] Cortar el audio con el mismo sistema (cabezal + DIVIDIR)
 - [ ] Velocidad por clip: 0.5x (cámara lenta), 1x (normal), 2x (cámara rápida) — panel desplegable al pulsar el clip
+- [ ] Voltear horizontal (espejo) y vertical — dentro del panel desplegable
+- [ ] Rotar 90° — dentro del panel desplegable
 - [ ] Silenciar clip — dentro del panel desplegable
 - [ ] Control de volumen por clip (slider 0-100%) — dentro del panel desplegable
 - [ ] Control de volumen por pista de audio (slider 0-100%)
@@ -139,39 +144,85 @@ El problema que resuelve: CapCut, InShot y similares se han vuelto demasiado com
 
 ### Tarea 0 — Landing page + SEO completo
 
-**Objetivo**: que Google entienda qué es 2minclip desde el primer día de indexación. El SEO no se añade después — se construye en el código desde el primer commit.
+**Objetivo**: que Google entienda qué es 2minclip desde el primer día de indexación. La landing ES el producto — nada más entrar el usuario ya puede empezar a subir clips. Mismo concepto que ilovepdf.
+
+**Flujo de la landing:**
+1. Usuario llega a 2minclip.com
+2. Ve directamente la zona de subida — sin pantallas intermedias
+3. Sube uno o varios clips
+4. Elige el formato con un selector de 3 botones debajo de la zona de subida: 9:16 (preseleccionado), 16:9, 1:1
+5. Se desbloquea el botón "Empezar a editar"
+6. Entra directamente al editor — sin pantalla intermedia de selector de formato
+
+**El selector de formato en la landing:**
+- 3 botones pequeños: 9:16 Vertical · 16:9 YouTube · 1:1 Instagram
+- Por defecto 9:16 seleccionado (el más usado — TikTok/Reels)
+- El seleccionado se marca en naranja, los otros en gris oscuro
+- Se puede cambiar antes de entrar al editor pero no una vez dentro
+
+**Aviso de sesión — siempre visible en todas las pantallas:**
+- Una barra fina fija (no intrusiva) visible en landing y editor
+- Mensaje: "Si cierras esta pestaña perderás tu progreso"
+- Color naranja tenue — llama la atención sin molestar
+- Es la información más importante que puede ver el usuario — debe estar siempre presente
+
+**Sin pantallas de tutorial ni selector de formato intermedias** — el flujo es landing → editor directamente. El contenido SEO (Cómo funciona, FAQ, etc.) va debajo del fold.
 
 #### 0a — Estructura HTML semántica
-- `<h1>` único y claro: "Editor de vídeo online gratis — sin instalar, sin registrarse"
-- `<h2>` para cada sección: "Cómo funciona", "Para qué sirve", "Preguntas frecuentes"
+- HTML semántico estricto: `<main>`, `<section>`, `<article>`, `<nav>` — nunca divs genéricos donde hay semántica
 - Texto real con keywords en párrafos — Google necesita leer contenido, no solo ver botones
-- No usar divs genéricos donde hay semántica disponible (`<main>`, `<section>`, `<article>`, `<nav>`)
+- URLs separadas por idioma para que Google indexe versiones distintas:
+  - `2minclip.com/` → detecta idioma automáticamente
+  - `2minclip.com/es/` → versión española
+  - `2minclip.com/en/` → versión inglesa
+
+**Estructura de headings ES:**
+```
+H1: Editor de vídeo online gratis
+H2: Cortar vídeo online gratis
+H2: Unir vídeos online sin descargar
+H2: Formatos para todas las redes (9:16, 16:9, 1:1)
+H2: Sin complicaciones
+H2: Cómo usar 2minclip paso a paso
+H2: Preguntas frecuentes
+```
+
+**Estructura de headings EN:**
+```
+H1: Free Online Video Editor
+H2: Cut video online free
+H2: Merge videos online
+H2: Trim video online
+H2: Video speed changer online
+H2: Add text to video online
+H2: How to use 2minclip
+H2: Frequently asked questions
+```
 
 #### 0b — Meta tags y head
 ```html
 <!-- ES -->
-<title>Editor de vídeo online gratis | 2minclip — Sin instalar, sin registrarse</title>
-<meta name="description" content="Edita tus vídeos online gratis en 2 minutos. Corta, une, añade música y exporta en MP4 sin instalar nada ni crear cuenta. El editor de vídeo más sencillo de la web."/>
-<link rel="canonical" href="https://2minclip.com"/>
-<link rel="alternate" hreflang="es" href="https://2minclip.com"/>
-<link rel="alternate" hreflang="en" href="https://2minclip.com/en"/>
-<link rel="alternate" hreflang="x-default" href="https://2minclip.com"/>
+<title>Editor vídeo online GRATIS - Sin instalar ni registrarse | 2minclip</title>
+<meta name="description" content="Corta, une y edita vídeos online en 2 minutos. Sin registrarse, sin instalar nada. Editor de vídeo gratis para TikTok, Reels, YouTube."/>
+<link rel="canonical" href="https://2minclip.com/es/"/>
+<link rel="alternate" hreflang="es" href="https://2minclip.com/es/"/>
+<link rel="alternate" hreflang="en" href="https://2minclip.com/en/"/>
+<link rel="alternate" hreflang="x-default" href="https://2minclip.com/"/>
 
-<!-- Open Graph -->
+<!-- EN -->
+<title>Free Online Video Editor - No Signup, No Download | 2minclip</title>
+<meta name="description" content="Cut, merge and edit videos online in 2 minutes. No registration, no software. Free video editor for TikTok, Reels, YouTube."/>
+
+<!-- Open Graph (igual para ambos) -->
 <meta property="og:title" content="Editor de vídeo online gratis | 2minclip"/>
 <meta property="og:description" content="Edita vídeos online en 2 minutos. Sin instalar. Sin registrarse."/>
 <meta property="og:image" content="https://2minclip.com/og-image.png"/>
 <meta property="og:url" content="https://2minclip.com"/>
 <meta property="og:type" content="website"/>
-
-<!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="Editor de vídeo online gratis | 2minclip"/>
-<meta name="twitter:image" content="https://2minclip.com/og-image.png"/>
 ```
 
 #### 0c — Schema markup (JSON-LD)
-Añadir en el `<head>` para que Google entienda que es una aplicación web:
 ```json
 {
   "@context": "https://schema.org",
@@ -179,7 +230,7 @@ Añadir en el `<head>` para que Google entienda que es una aplicación web:
   "name": "2minclip",
   "url": "https://2minclip.com",
   "description": "Editor de vídeo online gratuito. Corta, une y exporta vídeos sin instalar nada.",
-  "applicationCategory": "MultimediaApplication",
+  "applicationCategory": "VideoEditor",
   "operatingSystem": "Web",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
 }
@@ -187,50 +238,85 @@ Añadir en el `<head>` para que Google entienda que es una aplicación web:
 
 #### 0d — Keywords objetivo por prioridad
 
-**Grupo 1 — Alta intención, cola larga (arrancar con estas)**
-- "editor de video online gratis sin registrarse"
-- "cortar video online sin instalar nada"
-- "unir videos online gratis"
-- "recortar video online gratis"
-- "editor de video online sin descargar"
-- "free online video editor no sign up" (EN)
-- "cut video online free no watermark" (EN)
-- "trim video online without account" (EN)
+**ES — Grupo 1 (alta intención, arrancar con estas):**
+- editor video online gratis
+- cortar video online
+- unir videos online
+- editar video online gratis
+- recortar video online
+- editor video movil online
+- cambiar velocidad video online
+- agregar texto video online
+- editor video sin descargar
+- cortar video para tiktok
 
-**Grupo 2 — Mayor volumen, más competencia (a medio plazo)**
-- "editor de video online gratis"
-- "cortar video online"
-- "editar video online"
-- "online video editor free" (EN)
-- "cut video online" (EN)
+**ES — Grupo 2 (cola larga, más fácil de rankear siendo nuevos):**
+- editor de video online gratis sin registrarse
+- cortar video online sin instalar nada
+- unir videos online gratis sin cuenta
+- editor video 9:16 online gratis
+- hacer reels online sin app
 
-**Grupo 3 — Keywords de plataforma (TikTok/Reels/YouTube)**
-- "editor video tiktok online gratis"
-- "hacer reels online sin app"
-- "editor video 9:16 online"
-- "make tiktok video online free" (EN)
+**EN — Grupo 1 (alta intención):**
+- online video editor free
+- cut video online
+- trim video online
+- merge videos online
+- video speed changer online
+- add text to video online
+- free video trimmer online
+- cut video for tiktok online
+- online video cutter free
+- free online video merger
+
+**EN — Grupo 2 (cola larga):**
+- free online video editor no sign up
+- cut video online free no watermark
+- trim video online without account
+- online video editor no download required
 
 #### 0e — Contenido de la landing (secciones obligatorias para SEO)
 
-**Hero** — H1 + subtítulo + botón CTA + captura del editor
-- H1: "Editor de vídeo online gratis"
-- Subtítulo con keywords: "Corta, une y exporta tus vídeos en MP4 sin instalar nada y sin crear cuenta. Listo en 2 minutos."
-- Botón: "Empezar ahora — es gratis"
+**Hero** — H1 + subtítulo + zona de subida + selector formato
+- H1 ES: "Editor de vídeo online gratis"
+- H1 EN: "Free Online Video Editor"
+- Subtítulo ES: "Corta, une y edita vídeos online en 2 minutos. Sin registrarse, sin instalar nada."
+- Subtítulo EN: "Cut, merge and edit videos online in 2 minutes. No sign up, no software."
+- Zona drag&drop de subida múltiple — esta es la H2: "Sube tus clips aquí"
+- Selector de formato integrado (9:16 / 16:9 / 1:1)
+- Botón "Empezar a editar"
 
-**Cómo funciona** — H2 + 3 pasos con texto real
-- Paso 1: "Elige el formato de tu vídeo — 9:16 para TikTok y Reels, 16:9 para YouTube, 1:1 para Instagram"
-- Paso 2: "Sube tus clips y edítalos — corta, ordena, añade música, texto y overlays"
-- Paso 3: "Exporta en MP4 — sin marca de agua, sin registrarte, sin pagar"
+**¿Qué puedes hacer?** — H3 con lista de funciones con keywords:
+- Cortar vídeos con precisión
+- Unir varios clips
+- Cambiar velocidad (0.5x, 1x, 2x)
+- Añadir audio y texto
+- Overlay de imágenes y vídeos
 
-**Para qué sirve** — H2 + párrafo con keywords
-- Texto que mencione: editar vídeos para redes sociales, recortar clips, unir vídeos, añadir música, exportar MP4, sin instalar, navegador, gratis
+**Formatos para todas las redes** — H2:
+- 9:16 para TikTok y Reels
+- 16:9 para YouTube
+- 1:1 para Instagram
 
-**FAQ** — H2 + preguntas reales que la gente busca
-- "¿Es gratis 2minclip?" → Sí, completamente gratis sin marca de agua
+**Sin complicaciones** — H2 + checklist:
+- ✅ Sin registro
+- ✅ Sin instalar nada
+- ✅ 100% gratis
+- ✅ Funciona en móvil y PC
+
+**Cómo usar 2minclip paso a paso** — H2 + pasos con keywords:
+1. Sube tus clips (MP4, MOV, WebM)
+2. Elige formato: 9:16 para TikTok/Reels, 16:9 para YouTube
+3. Arrastra para reordenar, corta con precisión, cambia velocidad
+4. Añade audio o texto si quieres
+5. Exporta en MP4 H.264 — gratis, sin marca de agua
+
+**FAQ** — H2 + preguntas reales:
+- "¿Es realmente gratis?" → Sí, 100% gratis sin marca de agua
 - "¿Necesito crear una cuenta?" → No, entras y usas directamente
 - "¿En qué formato exporta?" → Siempre MP4 H.264, compatible con TikTok, Instagram y YouTube
 - "¿Funciona en móvil?" → Sí, desde cualquier navegador móvil o de escritorio
-- "¿Qué formatos de vídeo acepta?" → MP4, MOV y WebM
+- "¿Qué formatos acepta?" → MP4, MOV y WebM
 - "¿Es seguro subir mis vídeos?" → Tus vídeos nunca salen de tu dispositivo — todo se procesa en tu propio navegador
 
 #### 0f — Archivos técnicos SEO
@@ -352,6 +438,12 @@ Añadir en el `<head>` para que Google entienda que es una aplicación web:
 - Conectar con Vercel y dominio 2minclip.com
 - Deploy automático en cada push
 - Verificar que funciona correctamente en móvil y escritorio desde el navegador
+- **Post-deploy inmediato**: Google Search Console + Bing Webmaster Tools — añadir propiedad, verificar dominio con DNS, enviar sitemap
+
+### Tarea 9b — Landing hero con captura real
+- Una vez el editor esté construido y funcionando, hacer captura real del editor con clips cargados, timeline visible y botones naranja
+- Sustituir el hero actual por: texto a la izquierda + captura del editor a la derecha (desktop) / captura debajo del botón (móvil)
+- La captura real convierte mucho mejor que cualquier mockup — hacerlo cuando el editor exista, no antes
 
 ---
 

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { background: #e8e8e8; display: flex; flex-direction: column; align-items: center; min-height: 100vh; gap: 16px; font-family: sans-serif; padding: 2rem 1rem; }
+  h2 { color: #222; font-size: 15px; font-weight: 600; text-align: center; margin-bottom: 4px; }
+  .subtitle { color: #888; font-size: 12px; text-align: center; margin-bottom: 24px; }
+  .screens { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .screen-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .screen-label { font-size: 11px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+
+<h2>2minclip — Mockup v6</h2>
+<div class="subtitle">Todas las pantallas · Fondo oscuro · Naranja como acento</div>
+
+<div class="screens">
+
+<!-- PANTALLA 0: LANDING — zona de subida como hero -->
+<div class="screen-wrap">
+<div class="screen-label">0 — Landing (nueva)</div>
+<svg width="300" height="640" viewBox="0 0 300 640" xmlns="http://www.w3.org/2000/svg" style="border-radius:36px;overflow:hidden;display:block;">
+  <rect width="300" height="640" fill="#0f0f0f" rx="36"/>
+  <rect x="2" y="2" width="296" height="636" rx="34" fill="none" stroke="#2a2a2a" stroke-width="3"/>
+  <!-- status bar -->
+  <text x="20" y="24" font-size="11" fill="#555" font-family="sans-serif">9:41</text>
+  <text x="280" y="24" font-size="11" fill="#555" font-family="sans-serif" text-anchor="end">●●●</text>
+  <!-- nav -->
+  <rect x="0" y="30" width="300" height="36" fill="#0a0a0a"/>
+  <rect x="0" y="66" width="300" height="0.5" fill="#1f1f1f"/>
+  <text x="20" y="53" font-size="16" fill="#ffffff" font-family="sans-serif" font-weight="700">2min</text>
+  <text x="67" y="53" font-size="16" fill="#e87040" font-family="sans-serif" font-weight="700">clip</text>
+  <rect x="224" y="38" width="58" height="20" rx="5" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="244" y="52" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">ES</text>
+  <text x="258" y="52" font-size="10" fill="#444" font-family="sans-serif" text-anchor="middle">/</text>
+  <text x="270" y="52" font-size="10" fill="#555" font-family="sans-serif" text-anchor="middle">EN</text>
+
+  <!-- hero texto -->
+  <text x="20" y="100" font-size="18" fill="#ffffff" font-family="sans-serif" font-weight="700" letter-spacing="-0.5">Editor de vídeo</text>
+  <text x="20" y="122" font-size="18" fill="#e87040" font-family="sans-serif" font-weight="700" letter-spacing="-0.5">online gratis</text>
+  <text x="20" y="142" font-size="11" fill="#555" font-family="sans-serif">Sin instalar. Sin registrarse. En 2 minutos.</text>
+
+  <!-- ZONA DE SUBIDA MÚLTIPLE — el hero -->
+  <rect x="16" y="158" width="268" height="200" rx="12" fill="#141414" stroke="#e87040" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <!-- icono subida -->
+  <rect x="130" y="196" width="40" height="30" rx="4" fill="none" stroke="#e87040" stroke-width="1.5"/>
+  <line x1="150" y1="182" x2="150" y2="210" stroke="#e87040" stroke-width="1.5" stroke-linecap="round"/>
+  <polygon points="142,192 150,182 158,192" fill="#e87040"/>
+  <!-- texto zona subida -->
+  <text x="150" y="248" font-size="12" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">Sube tus clips aquí</text>
+  <text x="150" y="266" font-size="10" fill="#555" font-family="sans-serif" text-anchor="middle">Arrastra o pulsa para seleccionar</text>
+  <text x="150" y="282" font-size="10" fill="#555" font-family="sans-serif" text-anchor="middle">Puedes subir varios a la vez</text>
+  <text x="150" y="300" font-size="9" fill="#333" font-family="sans-serif" text-anchor="middle">MP4 · MOV · WebM</text>
+  <!-- pills -->
+  <rect x="44" y="318" width="68" height="18" rx="9" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="78" y="330" font-size="9" fill="#666" font-family="sans-serif" text-anchor="middle">Sin registro</text>
+  <rect x="118" y="318" width="64" height="18" rx="9" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="150" y="330" font-size="9" fill="#666" font-family="sans-serif" text-anchor="middle">Sin instalar</text>
+  <rect x="188" y="318" width="68" height="18" rx="9" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="222" y="330" font-size="9" fill="#666" font-family="sans-serif" text-anchor="middle">100% gratis</text>
+
+  <!-- ESTADO: clips subidos — selector formato + botón desbloqueado -->
+  <!-- clip thumbnails -->
+  <rect x="16" y="348" width="268" height="44" rx="8" fill="#161616" stroke="#2a2a2a" stroke-width="0.5"/>
+  <rect x="24" y="356" width="32" height="28" rx="4" fill="#2a1508" stroke="#e87040" stroke-width="1"/>
+  <text x="40" y="374" font-size="8" fill="#e87040" font-family="sans-serif" text-anchor="middle">clip1</text>
+  <rect x="62" y="356" width="32" height="28" rx="4" fill="#2a1508" stroke="#e87040" stroke-width="1"/>
+  <text x="78" y="374" font-size="8" fill="#e87040" font-family="sans-serif" text-anchor="middle">clip2</text>
+  <rect x="100" y="356" width="32" height="28" rx="4" fill="#2a1508" stroke="#e87040" stroke-width="1"/>
+  <text x="116" y="374" font-size="8" fill="#e87040" font-family="sans-serif" text-anchor="middle">clip3</text>
+  <text x="196" y="367" font-size="9" fill="#555" font-family="sans-serif">3 clips listos</text>
+  <text x="196" y="380" font-size="8" fill="#333" font-family="sans-serif">+ añadir mas</text>
+
+  <!-- SELECTOR FORMATO integrado -->
+  <text x="16" y="410" font-size="9" fill="#555" font-family="sans-serif">Formato de salida:</text>
+  <!-- 9:16 seleccionado -->
+  <rect x="16" y="416" width="74" height="26" rx="6" fill="#2a1508" stroke="#e87040" stroke-width="1.5"/>
+  <text x="53" y="433" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">9:16 Vertical</text>
+  <!-- 16:9 -->
+  <rect x="96" y="416" width="74" height="26" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="133" y="433" font-size="10" fill="#555" font-family="sans-serif" text-anchor="middle">16:9 YouTube</text>
+  <!-- 1:1 -->
+  <rect x="176" y="416" width="74" height="26" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="213" y="433" font-size="10" fill="#555" font-family="sans-serif" text-anchor="middle">1:1 Instagram</text>
+
+  <!-- botón desbloqueado -->
+  <rect x="16" y="452" width="268" height="44" rx="12" fill="#ffffff"/>
+  <text x="150" y="479" font-size="13" fill="#000" font-family="sans-serif" text-anchor="middle" font-weight="700">Empezar a editar →</text>
+
+  <!-- aviso sesión — barra fina -->
+  <rect x="0" y="506" width="300" height="20" fill="#1f1008"/>
+  <rect x="0" y="526" width="300" height="0.5" fill="#3a2010"/>
+  <text x="150" y="519" font-size="8" fill="#e87040" font-family="sans-serif" text-anchor="middle">⚠ Si cierras esta pestana perderas tu progreso</text>
+
+  <!-- SEO content debajo -->
+  <rect x="0" y="527" width="300" height="0.5" fill="#1a1a1a"/>
+  <text x="20" y="548" font-size="10" fill="#444" font-family="sans-serif" font-weight="500">Como funciona · Para que sirve · FAQ</text>
+  <text x="20" y="564" font-size="9" fill="#2a2a2a" font-family="sans-serif">Contenido SEO debajo del fold —</text>
+  <text x="20" y="578" font-size="9" fill="#2a2a2a" font-family="sans-serif">Google lo indexa, el usuario no lo necesita</text>
+</svg>
+</div>
+
+<!-- PANTALLA 2: SELECTOR FORMATO — con aviso persistente -->
+<div class="screen-wrap">
+<div class="screen-label">2 — Formato</div>
+<svg width="300" height="640" viewBox="0 0 300 640" xmlns="http://www.w3.org/2000/svg" style="border-radius:36px;overflow:hidden;display:block;">
+  <rect width="300" height="640" fill="#0f0f0f" rx="36"/>
+  <rect x="2" y="2" width="296" height="636" rx="34" fill="none" stroke="#2a2a2a" stroke-width="3"/>
+  <text x="20" y="24" font-size="11" fill="#555" font-family="sans-serif">9:41</text>
+  <text x="280" y="24" font-size="11" fill="#555" font-family="sans-serif" text-anchor="end">●●●</text>
+  <rect x="0" y="30" width="300" height="36" fill="#0a0a0a"/>
+  <rect x="0" y="66" width="300" height="0.5" fill="#1f1f1f"/>
+  <text x="18" y="53" font-size="11" fill="#555" font-family="sans-serif">volver</text>
+  <text x="150" y="53" font-size="13" fill="#ccc" font-family="sans-serif" text-anchor="middle" font-weight="500">Elige el formato</text>
+  <!-- AVISO PERSISTENTE — barra fina naranja -->
+  <rect x="0" y="67" width="300" height="24" fill="#1f1008"/>
+  <rect x="0" y="91" width="300" height="0.5" fill="#3a2010"/>
+  <text x="150" y="83" font-size="9" fill="#e87040" font-family="sans-serif" text-anchor="middle">⚠ Si cierras esta pestana perderas tu progreso</text>
+  <text x="150" y="113" font-size="12" fill="#555" font-family="sans-serif" text-anchor="middle">Donde vas a publicar el video?</text>
+  <rect x="16" y="126" width="268" height="110" rx="10" fill="#1f1008" stroke="#e87040" stroke-width="1.5"/>
+  <rect x="32" y="138" width="44" height="72" rx="4" fill="#2a1508" stroke="#e87040" stroke-width="1"/>
+  <text x="54" y="178" font-size="8" fill="#e87040" font-family="sans-serif" text-anchor="middle">9:16</text>
+  <text x="92" y="155" font-size="13" fill="#fff" font-family="sans-serif" font-weight="500">Vertical</text>
+  <text x="92" y="171" font-size="11" fill="#888" font-family="sans-serif">TikTok · Reels · Shorts</text>
+  <text x="92" y="187" font-size="11" fill="#888" font-family="sans-serif">1080 x 1920px</text>
+  <circle cx="264" cy="162" r="10" fill="#e87040"/>
+  <text x="264" y="166" font-size="11" fill="#000" font-family="sans-serif" text-anchor="middle" font-weight="700">v</text>
+  <rect x="16" y="246" width="268" height="110" rx="10" fill="#161616" stroke="#2a2a2a" stroke-width="0.5"/>
+  <rect x="32" y="272" width="78" height="44" rx="4" fill="#1a1a1a" stroke="#333" stroke-width="0.5"/>
+  <text x="71" y="298" font-size="8" fill="#555" font-family="sans-serif" text-anchor="middle">16:9</text>
+  <text x="124" y="281" font-size="13" fill="#aaa" font-family="sans-serif" font-weight="500">Horizontal</text>
+  <text x="124" y="299" font-size="11" fill="#555" font-family="sans-serif">YouTube · Vimeo</text>
+  <text x="124" y="315" font-size="11" fill="#555" font-family="sans-serif">1920 x 1080px</text>
+  <rect x="16" y="366" width="268" height="110" rx="10" fill="#161616" stroke="#2a2a2a" stroke-width="0.5"/>
+  <rect x="32" y="392" width="60" height="60" rx="4" fill="#1a1a1a" stroke="#333" stroke-width="0.5"/>
+  <text x="62" y="426" font-size="8" fill="#555" font-family="sans-serif" text-anchor="middle">1:1</text>
+  <text x="108" y="409" font-size="13" fill="#aaa" font-family="sans-serif" font-weight="500">Cuadrado</text>
+  <text x="108" y="427" font-size="11" fill="#555" font-family="sans-serif">Instagram feed</text>
+  <text x="108" y="443" font-size="11" fill="#555" font-family="sans-serif">1080 x 1080px</text>
+  <text x="150" y="498" font-size="11" fill="#444" font-family="sans-serif" text-anchor="middle">No podras cambiarlo una vez dentro.</text>
+  <rect x="16" y="510" width="268" height="50" rx="12" fill="#ffffff"/>
+  <text x="150" y="541" font-size="14" fill="#000" font-family="sans-serif" text-anchor="middle" font-weight="700">Continuar con Vertical</text>
+</svg>
+</div>
+
+<!-- PANTALLA 3: EDITOR — sin panel abierto -->
+<div class="screen-wrap">
+<div class="screen-label">3 — Editor</div>
+<svg width="300" height="640" viewBox="0 0 300 640" xmlns="http://www.w3.org/2000/svg" style="border-radius:36px;overflow:hidden;display:block;">
+  <rect width="300" height="640" fill="#0f0f0f" rx="36"/>
+  <rect x="2" y="2" width="296" height="636" rx="34" fill="none" stroke="#2a2a2a" stroke-width="3"/>
+  <text x="20" y="24" font-size="11" fill="#555" font-family="sans-serif">9:41</text>
+  <text x="280" y="24" font-size="11" fill="#555" font-family="sans-serif" text-anchor="end">●●●</text>
+  <rect x="0" y="30" width="300" height="36" fill="#0a0a0a"/>
+  <rect x="0" y="66" width="300" height="0.5" fill="#1f1f1f"/>
+  <text x="18" y="53" font-size="11" fill="#555" font-family="sans-serif">volver</text>
+  <rect x="106" y="37" width="34" height="18" rx="4" fill="#1f1008" stroke="#e87040" stroke-width="0.5"/>
+  <text x="123" y="50" font-size="9" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">9:16</text>
+  <rect x="218" y="36" width="68" height="26" rx="7" fill="#ffffff"/>
+  <text x="252" y="53" font-size="12" fill="#000" font-family="sans-serif" text-anchor="middle" font-weight="700">Exportar</text>
+  <!-- AVISO PERSISTENTE -->
+  <rect x="0" y="67" width="300" height="20" fill="#1f1008"/>
+  <rect x="0" y="87" width="300" height="0.5" fill="#3a2010"/>
+  <text x="150" y="80" font-size="8" fill="#e87040" font-family="sans-serif" text-anchor="middle">⚠ Si cierras esta pestana perderas tu progreso</text>
+  <!-- Preview -->
+  <rect x="0" y="88" width="300" height="137" fill="#000"/>
+  <rect x="110" y="93" width="80" height="122" rx="3" fill="#0a0a0a" stroke="#1f1f1f" stroke-width="0.5"/>
+  <circle cx="150" cy="154" r="17" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.12" stroke-width="0.5"/>
+  <polygon points="145,147 145,161 157,154" fill="#ffffff" fill-opacity="0.5"/>
+  <text x="282" y="222" font-size="10" fill="#444" font-family="sans-serif" text-anchor="end">0:04 / 0:18</text>
+  <rect x="0" y="225" width="300" height="0.5" fill="#1a1a1a"/>
+  <!-- VIDEO label -->
+  <text x="14" y="242" font-size="9" fill="#444" font-family="sans-serif" letter-spacing="0.8">VIDEO</text>
+  <rect x="240" y="231" width="48" height="16" rx="4" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="264" y="242" font-size="9" fill="#666" font-family="sans-serif" text-anchor="middle">+ capa</text>
+  <!-- overlay row -->
+  <rect x="14" y="248" width="70" height="22" rx="5" fill="#141020" stroke="#ffffff" stroke-opacity="0.08" stroke-width="0.5" stroke-dasharray="3 2"/>
+  <text x="49" y="263" font-size="9" fill="#ffffff" fill-opacity="0.3" font-family="sans-serif" text-anchor="middle">Overlay</text>
+  <rect x="88" y="248" width="22" height="22" rx="5" fill="none" stroke="#2a2a2a" stroke-width="0.5" stroke-dasharray="3 2"/>
+  <text x="99" y="263" font-size="13" fill="#3a3a3a" font-family="sans-serif" text-anchor="middle">+</text>
+  <!-- Playhead -->
+  <rect x="110" y="274" width="14" height="7" rx="2" fill="#ffffff"/>
+  <rect x="116" y="281" width="1.5" height="40" fill="#ffffff" fill-opacity="0.65"/>
+  <!-- Clips base -->
+  <rect x="14" y="281" width="84" height="36" rx="6" fill="#2a1508" stroke="#e87040" stroke-width="1.5"/>
+  <text x="56" y="303" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="500">Clip 1</text>
+  <rect x="102" y="281" width="54" height="36" rx="6" fill="#2a1508"/>
+  <text x="129" y="303" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="500">Clip 2</text>
+  <rect x="160" y="281" width="60" height="36" rx="6" fill="#2a1508"/>
+  <text x="190" y="303" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="500">Clip 3</text>
+  <rect x="224" y="281" width="26" height="36" rx="6" fill="none" stroke="#2a2a2a" stroke-width="0.5" stroke-dasharray="3 2"/>
+  <text x="237" y="303" font-size="14" fill="#3a3a3a" font-family="sans-serif" text-anchor="middle">+</text>
+  <rect x="14" y="329" width="272" height="0.5" fill="#1a1a1a"/>
+  <!-- AUDIO -->
+  <text x="14" y="347" font-size="9" fill="#444" font-family="sans-serif" letter-spacing="0.8">AUDIO</text>
+  <rect x="240" y="336" width="48" height="16" rx="4" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="264" y="347" font-size="9" fill="#666" font-family="sans-serif" text-anchor="middle">+ pista</text>
+  <!-- Pista audio -->
+  <rect x="14" y="353" width="196" height="28" rx="5" fill="#0c1c0c" stroke="#1a331a" stroke-width="0.5"/>
+  <text x="24" y="370" font-size="9" fill="#3a7a3a" font-family="sans-serif">Musica</text>
+  <rect x="58" y="360" width="1.5" height="7" rx="1" fill="#2a522a"/>
+  <rect x="62" y="356" width="1.5" height="13" rx="1" fill="#2a522a"/>
+  <rect x="66" y="359" width="1.5" height="9" rx="1" fill="#2a522a"/>
+  <rect x="70" y="354" width="1.5" height="17" rx="1" fill="#2a522a"/>
+  <rect x="74" y="358" width="1.5" height="10" rx="1" fill="#2a522a"/>
+  <rect x="78" y="355" width="1.5" height="15" rx="1" fill="#2a522a"/>
+  <rect x="82" y="360" width="1.5" height="8" rx="1" fill="#2a522a"/>
+  <rect x="86" y="353" width="1.5" height="19" rx="1" fill="#2a522a"/>
+  <!-- vol audio -->
+  <text x="100" y="364" font-size="7" fill="#2a522a" font-family="sans-serif">vol</text>
+  <rect x="110" y="362" width="44" height="4" rx="2" fill="#1a331a"/>
+  <rect x="110" y="362" width="32" height="4" rx="2" fill="#3a7a3a"/>
+  <circle cx="142" cy="364" r="4" fill="#3a7a3a"/>
+  <!-- fade out -->
+  <rect x="158" y="357" width="44" height="16" rx="4" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="180" y="368" font-size="8" fill="#555" font-family="sans-serif" text-anchor="middle">fade out</text>
+  <rect x="214" y="353" width="22" height="28" rx="5" fill="none" stroke="#2a2a2a" stroke-width="0.5" stroke-dasharray="3 2"/>
+  <text x="225" y="370" font-size="13" fill="#3a3a3a" font-family="sans-serif" text-anchor="middle">+</text>
+  <!-- scroll hint -->
+  <text x="150" y="400" font-size="9" fill="#2a2a2a" font-family="sans-serif" text-anchor="middle">↕ scroll si hay mas capas</text>
+  <!-- ADSENSE -->
+  <rect x="0" y="524" width="300" height="0.5" fill="#1a1a1a"/>
+  <rect x="0" y="525" width="300" height="44" fill="#0a0a0a"/>
+  <rect x="14" y="531" width="272" height="32" rx="4" fill="#141414" stroke="#222" stroke-width="0.5" stroke-dasharray="3 2"/>
+  <text x="150" y="551" font-size="9" fill="#2a2a2a" font-family="sans-serif" text-anchor="middle">[ banner AdSense 320x50 ]</text>
+  <!-- BOTONES -->
+  <rect x="0" y="569" width="300" height="0.5" fill="#1a1a1a"/>
+  <rect x="0" y="570" width="300" height="64" fill="#0a0a0a"/>
+  <rect x="8" y="578" width="62" height="38" rx="8" fill="#2a1508" stroke="#e87040" stroke-width="1"/>
+  <text x="39" y="601" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">+ Clip</text>
+  <rect x="78" y="578" width="62" height="38" rx="8" fill="#2a1508" stroke="#e87040" stroke-width="1"/>
+  <text x="109" y="601" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">Dividir</text>
+  <rect x="148" y="578" width="62" height="38" rx="8" fill="#2a1508" stroke="#e87040" stroke-width="1"/>
+  <text x="179" y="601" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">+ Audio</text>
+  <rect x="218" y="578" width="74" height="38" rx="8" fill="#2a1508" stroke="#e87040" stroke-width="1"/>
+  <text x="255" y="601" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">+ Texto</text>
+</svg>
+</div>
+
+<!-- PANTALLA 3b: EDITOR — con bottom sheet clip abierto -->
+<div class="screen-wrap">
+<div class="screen-label">3b — Clip seleccionado</div>
+<svg width="300" height="640" viewBox="0 0 300 640" xmlns="http://www.w3.org/2000/svg" style="border-radius:36px;overflow:hidden;display:block;">
+  <rect width="300" height="640" fill="#0f0f0f" rx="36"/>
+  <rect x="2" y="2" width="296" height="636" rx="34" fill="none" stroke="#2a2a2a" stroke-width="3"/>
+  <text x="20" y="24" font-size="11" fill="#555" font-family="sans-serif">9:41</text>
+  <text x="280" y="24" font-size="11" fill="#555" font-family="sans-serif" text-anchor="end">●●●</text>
+  <rect x="0" y="30" width="300" height="36" fill="#0a0a0a"/>
+  <rect x="0" y="66" width="300" height="0.5" fill="#1f1f1f"/>
+  <text x="18" y="53" font-size="11" fill="#555" font-family="sans-serif">volver</text>
+  <rect x="106" y="37" width="34" height="18" rx="4" fill="#1f1008" stroke="#e87040" stroke-width="0.5"/>
+  <text x="123" y="50" font-size="9" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">9:16</text>
+  <rect x="218" y="36" width="68" height="26" rx="7" fill="#ffffff"/>
+  <text x="252" y="53" font-size="12" fill="#000" font-family="sans-serif" text-anchor="middle" font-weight="700">Exportar</text>
+  <!-- Preview -->
+  <rect x="0" y="67" width="300" height="158" fill="#000"/>
+  <rect x="110" y="72" width="80" height="142" rx="3" fill="#0a0a0a" stroke="#1f1f1f" stroke-width="0.5"/>
+  <circle cx="150" cy="143" r="17" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.12" stroke-width="0.5"/>
+  <polygon points="145,136 145,150 157,143" fill="#ffffff" fill-opacity="0.5"/>
+  <text x="282" y="220" font-size="10" fill="#444" font-family="sans-serif" text-anchor="end">0:04 / 0:18</text>
+  <rect x="0" y="225" width="300" height="0.5" fill="#1a1a1a"/>
+  <!-- VIDEO -->
+  <text x="14" y="242" font-size="9" fill="#444" font-family="sans-serif" letter-spacing="0.8">VIDEO</text>
+  <rect x="240" y="231" width="48" height="16" rx="4" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="264" y="242" font-size="9" fill="#666" font-family="sans-serif" text-anchor="middle">+ capa</text>
+  <rect x="14" y="248" width="70" height="22" rx="5" fill="#141020" stroke="#ffffff" stroke-opacity="0.08" stroke-width="0.5" stroke-dasharray="3 2"/>
+  <text x="49" y="263" font-size="9" fill="#ffffff" fill-opacity="0.3" font-family="sans-serif" text-anchor="middle">Overlay</text>
+  <rect x="88" y="248" width="22" height="22" rx="5" fill="none" stroke="#2a2a2a" stroke-width="0.5" stroke-dasharray="3 2"/>
+  <text x="99" y="263" font-size="13" fill="#3a3a3a" font-family="sans-serif" text-anchor="middle">+</text>
+  <!-- Playhead -->
+  <rect x="110" y="274" width="14" height="7" rx="2" fill="#ffffff"/>
+  <rect x="116" y="281" width="1.5" height="40" fill="#ffffff" fill-opacity="0.65"/>
+  <!-- Clips — clip 1 seleccionado -->
+  <rect x="14" y="281" width="84" height="36" rx="6" fill="#2a1508" stroke="#e87040" stroke-width="2"/>
+  <text x="56" y="303" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">Clip 1</text>
+  <rect x="102" y="281" width="54" height="36" rx="6" fill="#2a1508"/>
+  <text x="129" y="303" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="500">Clip 2</text>
+  <rect x="160" y="281" width="60" height="36" rx="6" fill="#2a1508"/>
+  <text x="190" y="303" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="500">Clip 3</text>
+  <rect x="224" y="281" width="26" height="36" rx="6" fill="none" stroke="#2a2a2a" stroke-width="0.5" stroke-dasharray="3 2"/>
+  <text x="237" y="303" font-size="14" fill="#3a3a3a" font-family="sans-serif" text-anchor="middle">+</text>
+  <rect x="14" y="329" width="272" height="0.5" fill="#1a1a1a"/>
+  <!-- AUDIO -->
+  <text x="14" y="347" font-size="9" fill="#444" font-family="sans-serif" letter-spacing="0.8">AUDIO</text>
+  <rect x="240" y="336" width="48" height="16" rx="4" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="264" y="347" font-size="9" fill="#666" font-family="sans-serif" text-anchor="middle">+ pista</text>
+  <rect x="14" y="353" width="196" height="28" rx="5" fill="#0c1c0c" stroke="#1a331a" stroke-width="0.5"/>
+  <text x="24" y="370" font-size="9" fill="#3a7a3a" font-family="sans-serif">Musica</text>
+  <rect x="58" y="360" width="1.5" height="7" rx="1" fill="#2a522a"/>
+  <rect x="62" y="356" width="1.5" height="13" rx="1" fill="#2a522a"/>
+  <rect x="66" y="359" width="1.5" height="9" rx="1" fill="#2a522a"/>
+  <rect x="70" y="354" width="1.5" height="17" rx="1" fill="#2a522a"/>
+  <rect x="74" y="358" width="1.5" height="10" rx="1" fill="#2a522a"/>
+  <rect x="78" y="355" width="1.5" height="15" rx="1" fill="#2a522a"/>
+  <text x="100" y="364" font-size="7" fill="#2a522a" font-family="sans-serif">vol</text>
+  <rect x="110" y="362" width="44" height="4" rx="2" fill="#1a331a"/>
+  <rect x="110" y="362" width="32" height="4" rx="2" fill="#3a7a3a"/>
+  <circle cx="142" cy="364" r="4" fill="#3a7a3a"/>
+  <rect x="158" y="357" width="44" height="16" rx="4" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="180" y="368" font-size="8" fill="#555" font-family="sans-serif" text-anchor="middle">fade out</text>
+  <rect x="214" y="353" width="22" height="28" rx="5" fill="none" stroke="#2a2a2a" stroke-width="0.5" stroke-dasharray="3 2"/>
+  <text x="225" y="370" font-size="13" fill="#3a3a3a" font-family="sans-serif" text-anchor="middle">+</text>
+
+  <!-- OVERLAY OSCURO sobre botones de accion -->
+  <rect x="0" y="395" width="300" height="245" fill="#000000" fill-opacity="0.5"/>
+
+  <!-- BOTTOM SHEET — sube desde abajo tapando solo la barra inferior -->
+  <rect x="0" y="408" width="300" height="252" rx="0" fill="#1a1a1a"/>
+  <rect x="0" y="408" width="300" height="252" rx="16" fill="#1a1a1a"/>
+  <!-- handle -->
+  <rect x="120" y="416" width="60" height="4" rx="2" fill="#333"/>
+  <!-- titulo -->
+  <text x="20" y="438" font-size="11" fill="#888" font-family="sans-serif" letter-spacing="0.5">CLIP 1 — OPCIONES</text>
+  <text x="272" y="438" font-size="11" fill="#444" font-family="sans-serif" text-anchor="end">✕</text>
+  <rect x="14" y="443" width="272" height="0.5" fill="#2a2a2a"/>
+
+  <!-- VELOCIDAD -->
+  <text x="20" y="462" font-size="10" fill="#666" font-family="sans-serif">Velocidad</text>
+  <rect x="20" y="468" width="52" height="26" rx="6" fill="#111" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="46" y="485" font-size="11" fill="#555" font-family="sans-serif" text-anchor="middle">0.5x</text>
+  <rect x="78" y="468" width="52" height="26" rx="6" fill="#2a1508" stroke="#e87040" stroke-width="1.5"/>
+  <text x="104" y="485" font-size="11" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">1x</text>
+  <rect x="136" y="468" width="52" height="26" rx="6" fill="#111" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="162" y="485" font-size="11" fill="#555" font-family="sans-serif" text-anchor="middle">2x</text>
+
+  <!-- VOLTEAR Y ROTAR -->
+  <text x="20" y="510" font-size="10" fill="#666" font-family="sans-serif">Transformar</text>
+  <rect x="20" y="516" width="72" height="26" rx="6" fill="#111" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="56" y="533" font-size="10" fill="#555" font-family="sans-serif" text-anchor="middle">↔ Espejo H</text>
+  <rect x="98" y="516" width="72" height="26" rx="6" fill="#111" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="134" y="533" font-size="10" fill="#555" font-family="sans-serif" text-anchor="middle">↕ Espejo V</text>
+  <rect x="176" y="516" width="72" height="26" rx="6" fill="#111" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="212" y="533" font-size="10" fill="#555" font-family="sans-serif" text-anchor="middle">↻ Rotar 90°</text>
+
+  <!-- VOLUMEN CLIP -->
+  <text x="20" y="560" font-size="10" fill="#666" font-family="sans-serif">Volumen del clip</text>
+  <rect x="20" y="566" width="200" height="6" rx="3" fill="#111"/>
+  <rect x="20" y="566" width="150" height="6" rx="3" fill="#e87040" fill-opacity="0.5"/>
+  <circle cx="170" cy="569" r="8" fill="#e87040"/>
+  <text x="238" y="573" font-size="11" fill="#e87040" font-family="sans-serif">75%</text>
+
+  <!-- SILENCIAR -->
+  <rect x="20" y="584" width="260" height="30" rx="8" fill="#111" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="150" y="603" font-size="11" fill="#666" font-family="sans-serif" text-anchor="middle">Silenciar audio del clip</text>
+
+  <!-- toca fuera para cerrar -->
+  <text x="150" y="648" font-size="9" fill="#333" font-family="sans-serif" text-anchor="middle">toca fuera para cerrar</text>
+</svg>
+</div>
+
+<!-- PANTALLA 4: EXPORTAR -->
+<div class="screen-wrap">
+<div class="screen-label">4 — Exportar</div>
+<svg width="300" height="640" viewBox="0 0 300 640" xmlns="http://www.w3.org/2000/svg" style="border-radius:36px;overflow:hidden;display:block;">
+  <rect width="300" height="640" fill="#0f0f0f" rx="36"/>
+  <rect x="2" y="2" width="296" height="636" rx="34" fill="none" stroke="#2a2a2a" stroke-width="3"/>
+  <text x="20" y="24" font-size="11" fill="#555" font-family="sans-serif">9:41</text>
+  <text x="280" y="24" font-size="11" fill="#555" font-family="sans-serif" text-anchor="end">●●●</text>
+  <rect x="0" y="30" width="300" height="36" fill="#0a0a0a"/>
+  <rect x="0" y="66" width="300" height="0.5" fill="#1f1f1f"/>
+  <text x="150" y="53" font-size="13" fill="#ccc" font-family="sans-serif" text-anchor="middle" font-weight="500">Exportando...</text>
+  <text x="150" y="104" font-size="13" fill="#888" font-family="sans-serif" text-anchor="middle">Procesando tu video</text>
+  <rect x="24" y="118" width="252" height="6" rx="3" fill="#1a1a1a"/>
+  <rect x="24" y="118" width="168" height="6" rx="3" fill="#e87040"/>
+  <text x="150" y="142" font-size="11" fill="#555" font-family="sans-serif" text-anchor="middle">67% · Casi listo...</text>
+  <rect x="14" y="158" width="272" height="210" rx="10" fill="#141414" stroke="#222" stroke-width="0.5" stroke-dasharray="3 2"/>
+  <text x="150" y="248" font-size="11" fill="#2a2a2a" font-family="sans-serif" text-anchor="middle">[ anuncio AdSense ]</text>
+  <text x="150" y="266" font-size="10" fill="#222" font-family="sans-serif" text-anchor="middle">obligatorio antes de la descarga</text>
+  <text x="150" y="282" font-size="10" fill="#222" font-family="sans-serif" text-anchor="middle">el usuario espera el render de todas formas</text>
+  <rect x="14" y="382" width="272" height="80" rx="8" fill="#161616" stroke="#222" stroke-width="0.5"/>
+  <text x="28" y="404" font-size="11" fill="#888" font-family="sans-serif">Formato</text>
+  <text x="272" y="404" font-size="11" fill="#ccc" font-family="sans-serif" text-anchor="end">MP4 H.264</text>
+  <rect x="28" y="412" width="244" height="0.5" fill="#1f1f1f"/>
+  <text x="28" y="430" font-size="11" fill="#888" font-family="sans-serif">Ratio</text>
+  <text x="272" y="430" font-size="11" fill="#ccc" font-family="sans-serif" text-anchor="end">9:16 · 1080x1920px</text>
+  <rect x="28" y="438" width="244" height="0.5" fill="#1f1f1f"/>
+  <text x="28" y="456" font-size="11" fill="#888" font-family="sans-serif">Duracion</text>
+  <text x="272" y="456" font-size="11" fill="#ccc" font-family="sans-serif" text-anchor="end">0:18</text>
+  <rect x="16" y="480" width="268" height="54" rx="12" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+  <text x="150" y="512" font-size="14" fill="#444" font-family="sans-serif" text-anchor="middle" font-weight="700">Descargar video</text>
+  <text x="150" y="528" font-size="10" fill="#333" font-family="sans-serif" text-anchor="middle">disponible al terminar</text>
+  <text x="150" y="590" font-size="11" fill="#444" font-family="sans-serif" text-anchor="middle">Volver al editor</text>
+</svg>
+</div>
+
+<!-- ─── VISTA DESKTOP: LANDING COMPLETA ─── -->
+<div style="width:100%;margin-top:2rem;">
+  <div style="font-size:11px;color:#888;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;text-align:center;margin-bottom:12px;">Landing desktop — estructura SEO completa</div>
+  <svg width="900" height="720" viewBox="0 0 900 720" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto;border-radius:12px;overflow:hidden;">
+    <rect width="900" height="720" fill="#111"/>
+
+    <!-- NAV — ancho completo -->
+    <rect x="0" y="0" width="900" height="52" fill="#0a0a0a"/>
+    <rect x="0" y="52" width="900" height="0.5" fill="#1f1f1f"/>
+    <!-- contenido nav centrado con max-width -->
+    <text x="100" y="33" font-size="20" fill="#fff" font-family="sans-serif" font-weight="700">2min</text>
+    <text x="154" y="33" font-size="20" fill="#e87040" font-family="sans-serif" font-weight="700">clip</text>
+    <rect x="762" y="15" width="70" height="22" rx="5" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+    <text x="788" y="30" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">ES</text>
+    <text x="802" y="30" font-size="10" fill="#444" font-family="sans-serif" text-anchor="middle">/</text>
+    <text x="816" y="30" font-size="10" fill="#555" font-family="sans-serif" text-anchor="middle">EN</text>
+
+    <!-- AVISO SESION -->
+    <rect x="0" y="52" width="900" height="22" fill="#1f1008"/>
+    <rect x="0" y="74" width="900" height="0.5" fill="#3a2010"/>
+    <text x="450" y="66" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle">⚠ Si cierras esta pestaña perderás tu progreso — hazlo todo en una sesión</text>
+
+    <!-- MAX-WIDTH CONTAINER: 700px centrado (100 a 800) -->
+    <!-- indicador max-width -->
+    <rect x="100" y="74" width="700" height="1" fill="#1a1a1a" stroke-dasharray="none"/>
+
+    <!-- columna izquierda: 100 a 370 -->
+    <text x="100" y="130" font-size="26" fill="#fff" font-family="sans-serif" font-weight="700" letter-spacing="-0.5">Editor de vídeo</text>
+    <text x="100" y="162" font-size="26" fill="#e87040" font-family="sans-serif" font-weight="700" letter-spacing="-0.5">online gratis</text>
+    <text x="100" y="186" font-size="12" fill="#555" font-family="sans-serif">Corta, une y edita vídeos en 2 minutos.</text>
+    <text x="100" y="202" font-size="12" fill="#555" font-family="sans-serif">Sin registrarse. Sin instalar nada.</text>
+
+    <!-- pills -->
+    <rect x="100" y="218" width="80" height="20" rx="10" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+    <text x="140" y="232" font-size="9" fill="#666" font-family="sans-serif" text-anchor="middle">Sin registro</text>
+    <rect x="188" y="218" width="76" height="20" rx="10" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+    <text x="226" y="232" font-size="9" fill="#666" font-family="sans-serif" text-anchor="middle">Sin instalar</text>
+    <rect x="272" y="218" width="82" height="20" rx="10" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.5"/>
+    <text x="313" y="232" font-size="9" fill="#666" font-family="sans-serif" text-anchor="middle">100% gratis</text>
+
+    <!-- features debajo para rellenar hueco -->
+    <rect x="100" y="252" width="260" height="0.5" fill="#1a1a1a"/>
+    <text x="100" y="272" font-size="11" fill="#444" font-family="sans-serif">✂  Cortar vídeo online gratis</text>
+    <text x="100" y="292" font-size="11" fill="#444" font-family="sans-serif">⚡  Cambiar velocidad (0.5x · 1x · 2x)</text>
+    <text x="100" y="312" font-size="11" fill="#444" font-family="sans-serif">🎵  Añadir música y audio</text>
+    <text x="100" y="332" font-size="11" fill="#444" font-family="sans-serif">✏  Añadir texto con fuentes y colores</text>
+    <text x="100" y="352" font-size="11" fill="#444" font-family="sans-serif">🔗  Unir varios clips en un vídeo</text>
+    <text x="100" y="372" font-size="11" fill="#444" font-family="sans-serif">📱  Funciona en móvil y PC</text>
+
+    <!-- columna derecha: 390 a 800 -->
+    <!-- zona subida -->
+    <rect x="390" y="82" width="410" height="200" rx="12" fill="#141414" stroke="#e87040" stroke-width="1.5" stroke-dasharray="6 3"/>
+    <line x1="595" y1="122" x2="595" y2="168" stroke="#e87040" stroke-width="2" stroke-linecap="round"/>
+    <polygon points="581,140 595,122 609,140" fill="#e87040"/>
+    <rect x="570" y="156" width="50" height="36" rx="4" fill="none" stroke="#e87040" stroke-width="1.5"/>
+    <text x="595" y="220" font-size="13" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">Sube tus clips aquí</text>
+    <text x="595" y="240" font-size="11" fill="#555" font-family="sans-serif" text-anchor="middle">Arrastra o pulsa · Varios clips a la vez</text>
+    <text x="595" y="258" font-size="10" fill="#333" font-family="sans-serif" text-anchor="middle">MP4 · MOV · WebM</text>
+
+    <!-- thumbnails -->
+    <rect x="390" y="294" width="124" height="36" rx="6" fill="#2a1508" stroke="#e87040" stroke-width="1"/>
+    <text x="452" y="316" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle">clip1.mp4</text>
+    <rect x="522" y="294" width="124" height="36" rx="6" fill="#2a1508" stroke="#e87040" stroke-width="1"/>
+    <text x="584" y="316" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle">clip2.mp4</text>
+    <rect x="654" y="294" width="146" height="36" rx="6" fill="#2a1508" stroke="#e87040" stroke-width="1"/>
+    <text x="727" y="316" font-size="10" fill="#e87040" font-family="sans-serif" text-anchor="middle">clip3.mp4</text>
+
+    <!-- selector formato -->
+    <text x="390" y="352" font-size="10" fill="#555" font-family="sans-serif">Formato de salida:</text>
+    <rect x="390" y="358" width="126" height="26" rx="6" fill="#2a1508" stroke="#e87040" stroke-width="1.5"/>
+    <text x="453" y="375" font-size="11" fill="#e87040" font-family="sans-serif" text-anchor="middle" font-weight="700">9:16 Vertical</text>
+    <rect x="524" y="358" width="126" height="26" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="0.5"/>
+    <text x="587" y="375" font-size="11" fill="#555" font-family="sans-serif" text-anchor="middle">16:9 YouTube</text>
+    <rect x="658" y="358" width="142" height="26" rx="6" fill="#161616" stroke="#2a2a2a" stroke-width="0.5"/>
+    <text x="729" y="375" font-size="11" fill="#555" font-family="sans-serif" text-anchor="middle">1:1 Instagram</text>
+
+    <!-- botón -->
+    <rect x="390" y="396" width="410" height="44" rx="10" fill="#ffffff"/>
+    <text x="595" y="423" font-size="15" fill="#000" font-family="sans-serif" text-anchor="middle" font-weight="700">Empezar a editar →</text>
+
+    <!-- SEPARADOR FOLD -->
+    <rect x="0" y="456" width="900" height="0.5" fill="#1a1a1a"/>
+    <text x="450" y="473" font-size="9" fill="#2a2a2a" font-family="sans-serif" text-anchor="middle">↓ CONTENIDO SEO DEBAJO DEL FOLD ↓</text>
+
+    <!-- SEO content dentro del max-width -->
+    <text x="100" y="500" font-size="12" fill="#666" font-family="sans-serif" font-weight="500">Cortar vídeo online gratis · Unir vídeos online sin descargar · Cambiar velocidad vídeo online · Añadir texto a vídeo online</text>
+    <text x="100" y="524" font-size="11" fill="#444" font-family="sans-serif">9:16 TikTok/Reels · 16:9 YouTube · 1:1 Instagram — Sin marca de agua · Sin registro · Exporta en MP4 H.264</text>
+    <text x="100" y="548" font-size="11" fill="#444" font-family="sans-serif">Cómo usar 2minclip: 1) Sube clips  2) Elige formato  3) Corta y ordena  4) Añade audio/texto  5) Exporta en MP4</text>
+    <text x="100" y="572" font-size="11" fill="#3a3a3a" font-family="sans-serif">FAQ: ¿Es gratis? Sí · ¿Necesito cuenta? No · ¿Funciona en móvil? Sí · ¿Mis vídeos son privados? Sí, nunca salen de tu dispositivo</text>
+
+    <!-- footer -->
+    <rect x="0" y="600" width="900" height="0.5" fill="#1a1a1a"/>
+    <text x="450" y="628" font-size="10" fill="#333" font-family="sans-serif" text-anchor="middle">2minclip.com · Editor de vídeo online gratis · Free Online Video Editor</text>
+
+    <!-- indicadores max-width -->
+    <rect x="100" y="74" width="1" height="530" fill="#1a1a1a"/>
+    <rect x="800" y="74" width="1" height="530" fill="#1a1a1a"/>
+    <text x="50" y="340" font-size="8" fill="#2a2a2a" font-family="sans-serif" text-anchor="middle" transform="rotate(-90 50 340)">espacio lateral</text>
+    <text x="850" y="340" font-size="8" fill="#2a2a2a" font-family="sans-serif" text-anchor="middle" transform="rotate(90 850 340)">espacio lateral</text>
+  </svg>
+</div>
+
+</div>
+</body>
+</html>
