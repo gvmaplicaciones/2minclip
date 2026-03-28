@@ -19,6 +19,8 @@ import { CSS } from '@dnd-kit/utilities'
 import { useEditor } from '../context/EditorContext'
 import { useCanvas } from '../hooks/useCanvas'
 import AdSlot from '../components/AdSlot'
+import { ExportModal } from '../components/ExportModal'
+import { TutorialModal } from '../components/TutorialModal'
 import { readVideoMeta, generateThumbnail } from '../utils/videoMeta'
 
 export default function Editor() {
@@ -198,7 +200,9 @@ function EditorShell({ ratio, navigate }) {
   const [playheadTime, setPlayheadTime]     = useState(0)
   const [selectedClipId, setSelectedClipId] = useState(null)
   const [isPlaying, setIsPlaying]           = useState(false)
-  const [showBackConfirm, setShowBackConfirm] = useState(false)
+  const [showBackConfirm,  setShowBackConfirm]  = useState(false)
+  const [isExportOpen,     setIsExportOpen]     = useState(false)
+  const [isTutorialOpen,   setIsTutorialOpen]   = useState(false)
 
   const [audioTracks, setAudioTracks]               = useState([])
   const [selectedAudioSegId, setSelectedAudioSegId] = useState(null)
@@ -1166,8 +1170,8 @@ function EditorShell({ ratio, navigate }) {
             disabled={!canUndo}
             className={`w-7 h-7 rounded flex items-center justify-center transition-colors
               ${canUndo ? 'text-[#888] hover:text-white' : 'text-[#333] cursor-not-allowed'}`}
-            aria-label="Deshacer"
-            title="Deshacer (undo)"
+            aria-label={t('editor.undo')}
+            title={t('editor.undo_title')}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M2 5h5.5a4 4 0 010 8H4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -1180,8 +1184,8 @@ function EditorShell({ ratio, navigate }) {
             disabled={!canRedo}
             className={`w-7 h-7 rounded flex items-center justify-center transition-colors
               ${canRedo ? 'text-[#888] hover:text-white' : 'text-[#333] cursor-not-allowed'}`}
-            aria-label="Rehacer"
-            title="Rehacer (redo)"
+            aria-label={t('editor.redo')}
+            title={t('editor.redo_title')}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M12 5H6.5a4 4 0 000 8H10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -1193,9 +1197,22 @@ function EditorShell({ ratio, navigate }) {
           </div>
         </div>
 
-        <button className="bg-white text-black text-xs font-bold px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">
-          {t('editor.export_btn')}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsTutorialOpen(true)}
+            className="text-xs px-3 py-2 rounded-lg border border-[#2a2a2a] text-[#555] hover:text-[#aaa] hover:border-[#3a3a3a] transition-colors"
+          >
+            {t('editor.tutorial_btn')}
+          </button>
+          <button
+            onClick={() => { if (clips.length > 0) setIsExportOpen(true) }}
+            disabled={clips.length === 0}
+            className={`text-xs font-bold px-4 py-2 rounded-lg transition-opacity
+              ${clips.length > 0 ? 'bg-white text-black hover:opacity-90' : 'bg-[#2a2a2a] text-[#555] cursor-not-allowed'}`}
+          >
+            {t('editor.export_btn')}
+          </button>
+        </div>
       </nav>
 
       {/* ── CANVAS / PREVIEW ── */}
@@ -1292,7 +1309,7 @@ function EditorShell({ ratio, navigate }) {
         <button
           onClick={() => setPreviewExpanded((v) => !v)}
           className="absolute bottom-2 right-3 w-6 h-6 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center hover:border-[#3a3a3a] transition-colors"
-          aria-label={previewExpanded ? 'Reducir preview' : 'Ampliar preview'}
+          aria-label={previewExpanded ? t('editor.preview_shrink') : t('editor.preview_expand')}
         >
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
             {previewExpanded
@@ -1305,13 +1322,27 @@ function EditorShell({ ratio, navigate }) {
 
       {/* Timecode + zoom level + play/pause */}
       <div className="flex items-center justify-between px-4 py-1 shrink-0">
-        <button
-          onClick={() => setZoom(1)}
-          className="text-[10px] text-[#333] hover:text-[#555] transition-colors tabular-nums"
-          title="Restablecer zoom"
-        >
-          {zoom === 1 ? '1×' : `${zoom.toFixed(1)}×`}
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setZoom((z) => clampZoom(z / 1.35))}
+            className="px-2 py-1 rounded border border-[#252525] text-[9px] text-[#555] hover:text-[#aaa] hover:border-[#3a3a3a] transition-colors"
+          >
+            {t('editor.zoom_out')}
+          </button>
+          <button
+            onClick={() => setZoom(1)}
+            className="text-[10px] text-[#333] hover:text-[#555] transition-colors tabular-nums px-1 min-w-[28px] text-center"
+            title={t('editor.zoom_reset')}
+          >
+            {zoom === 1 ? '1×' : `${zoom.toFixed(1)}×`}
+          </button>
+          <button
+            onClick={() => setZoom((z) => clampZoom(z * 1.35))}
+            className="px-2 py-1 rounded border border-[#252525] text-[9px] text-[#555] hover:text-[#aaa] hover:border-[#3a3a3a] transition-colors"
+          >
+            {t('editor.zoom_in')}
+          </button>
+        </div>
 
         {/* Play / Pause */}
         <button
@@ -1321,7 +1352,7 @@ function EditorShell({ ratio, navigate }) {
             ${clips.length > 0
               ? 'border-[#e87040] border-opacity-60 hover:border-opacity-100 text-[#e87040]'
               : 'border-[#2a2a2a] text-[#333] cursor-not-allowed'}`}
-          aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
+          aria-label={isPlaying ? t('editor.pause_aria') : t('editor.play_aria')}
         >
           {isPlaying ? (
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
@@ -1634,6 +1665,23 @@ function EditorShell({ ratio, navigate }) {
         />
       ))}
 
+      {/* ── EXPORT MODAL ── */}
+      <ExportModal
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        clips={clips}
+        audioTracks={audioTracks}
+        overlays={overlays}
+        texts={texts}
+        ratio={ratio}
+      />
+
+      {/* ── TUTORIAL MODAL ── */}
+      <TutorialModal
+        isOpen={isTutorialOpen}
+        onClose={() => setIsTutorialOpen(false)}
+      />
+
       {/* ── BACK CONFIRMATION DIALOG ── */}
       {showBackConfirm && (
         <div
@@ -1653,22 +1701,22 @@ function EditorShell({ ratio, navigate }) {
                 </svg>
               </div>
             </div>
-            <p className="text-white text-sm font-semibold text-center mb-1">¿Salir del editor?</p>
+            <p className="text-white text-sm font-semibold text-center mb-1">{t('editor.back_confirm_title')}</p>
             <p className="text-[#666] text-xs text-center mb-5 leading-relaxed">
-              Vas a perder todo lo realizado. Esta acción no se puede deshacer.
+              {t('editor.back_confirm_body')}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setShowBackConfirm(false)}
                 className="flex-1 py-2 rounded-lg border border-[#2a2a2a] text-xs text-[#888] hover:text-white hover:border-[#444] transition-colors"
               >
-                Cancelar
+                {t('editor.back_confirm_cancel')}
               </button>
               <button
                 onClick={() => navigate('/')}
                 className="flex-1 py-2 rounded-lg bg-[#e87040] text-black text-xs font-bold hover:opacity-90 transition-opacity"
               >
-                Sí, salir
+                {t('editor.back_confirm_yes')}
               </button>
             </div>
           </div>
@@ -1682,6 +1730,7 @@ function EditorShell({ ratio, navigate }) {
 // ── sub-components ────────────────────────────────────────────────────────────
 
 function SortableClipTile({ clip, zoom, isSelected, onSelect, onDelete }) {
+  const { t } = useTranslation()
   const {
     attributes,
     listeners,
@@ -1740,7 +1789,7 @@ function SortableClipTile({ clip, zoom, isSelected, onSelect, onDelete }) {
           data-no-seek
           onClick={(e) => { e.stopPropagation(); onDelete(clip.id) }}
           className="absolute top-1 right-1 w-5 h-5 rounded bg-black bg-opacity-75 flex items-center justify-center hover:bg-opacity-95 transition-opacity"
-          aria-label="Eliminar clip"
+          aria-label={t('editor.delete_clip_aria')}
         >
           <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true">
             <path d="M1 1l6 6M7 1L1 7" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
@@ -1752,6 +1801,7 @@ function SortableClipTile({ clip, zoom, isSelected, onSelect, onDelete }) {
 }
 
 function ClipPanel({ clip, onUpdate, onDelete }) {
+  const { t } = useTranslation()
   const speed  = clip.speed  ?? 1
   const volume = clip.volume ?? 1
   const muted  = clip.muted  ?? false
@@ -1761,7 +1811,7 @@ function ClipPanel({ clip, onUpdate, onDelete }) {
 
       {/* Speed */}
       <div className="flex items-center gap-3 mb-3">
-        <span className="text-[9px] text-[#444] tracking-widest w-14 shrink-0">VELOCIDAD</span>
+        <span className="text-[9px] text-[#444] tracking-widest w-14 shrink-0">{t('editor.panel_speed')}</span>
         <div className="flex gap-1.5">
           {[0.5, 1, 2].map((s) => (
             <button
@@ -1780,7 +1830,7 @@ function ClipPanel({ clip, onUpdate, onDelete }) {
 
       {/* Volume */}
       <div className="flex items-center gap-3 mb-3">
-        <span className="text-[9px] text-[#444] tracking-widest w-14 shrink-0">VOLUMEN</span>
+        <span className="text-[9px] text-[#444] tracking-widest w-14 shrink-0">{t('editor.panel_volume')}</span>
         <input
           type="range"
           min="0"
@@ -1797,14 +1847,14 @@ function ClipPanel({ clip, onUpdate, onDelete }) {
 
       {/* Mute toggle */}
       <div className="flex items-center gap-3 mb-3">
-        <span className="text-[9px] text-[#444] tracking-widest w-14 shrink-0">AUDIO</span>
+        <span className="text-[9px] text-[#444] tracking-widest w-14 shrink-0">{t('editor.panel_audio')}</span>
         <button
           onClick={() => onUpdate({ muted: !muted })}
           className={`w-8 h-8 rounded border flex items-center justify-center transition-colors
             ${muted
               ? 'bg-[#e87040] border-[#e87040] text-black'
               : 'bg-transparent border-[#2a2a2a] text-[#555] hover:border-[#444] hover:text-[#888]'}`}
-          aria-label={muted ? 'Activar audio' : 'Silenciar'}
+          aria-label={muted ? t('editor.unmute') : t('editor.mute')}
         >
           {muted ? <IconMuted size={14}/> : <IconVolume size={14}/>}
         </button>
@@ -1812,12 +1862,12 @@ function ClipPanel({ clip, onUpdate, onDelete }) {
 
       {/* Delete clip */}
       <div className="flex items-center gap-3 pt-3 border-t border-[#1a1a1a]">
-        <span className="text-[9px] text-[#444] tracking-widest w-14 shrink-0">CLIP</span>
+        <span className="text-[9px] text-[#444] tracking-widest w-14 shrink-0">{t('editor.panel_clip')}</span>
         <button
           onClick={onDelete}
           className="px-3 py-1 rounded border border-[#2a1a1a] text-[#884040] text-[10px] hover:border-[#3a2020] transition-colors"
         >
-          eliminar
+          {t('editor.delete')}
         </button>
       </div>
 
@@ -1860,6 +1910,7 @@ function ActionBtn({ label, onClick }) {
 // ── AudioSegTile — one audio segment block in the timeline ────────────────────
 
 function AudioSegTile({ seg, zoom, isSelected, onSelect, onDelete, trackStartOffset, onTrackOffsetChange, snapFn }) {
+  const { t } = useTranslation()
   const width = audioSegWidth(seg, zoom)
   const label = seg.name.replace(/\.[^.]+$/, '')
   const dragRef = useRef(null)
@@ -1928,7 +1979,7 @@ function AudioSegTile({ seg, zoom, isSelected, onSelect, onDelete, trackStartOff
           data-no-seek
           onClick={(e) => { e.stopPropagation(); onDelete() }}
           className="absolute top-0.5 right-0.5 w-4 h-4 rounded bg-black bg-opacity-75 flex items-center justify-center hover:bg-opacity-95 transition-opacity"
-          aria-label="Eliminar"
+          aria-label={t('editor.delete_aria')}
         >
           <svg width="7" height="7" viewBox="0 0 8 8" fill="none" aria-hidden="true">
             <path d="M1 1l6 6M7 1L1 7" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
@@ -1942,6 +1993,7 @@ function AudioSegTile({ seg, zoom, isSelected, onSelect, onDelete, trackStartOff
 // ── AudioSegPanel — controls for a selected audio segment ─────────────────────
 
 function AudioSegPanel({ seg, onUpdate, onDelete }) {
+  const { t } = useTranslation()
   const volume  = seg.volume  ?? 1
   const fadeOut = seg.fadeOut ?? false
 
@@ -1950,7 +2002,7 @@ function AudioSegPanel({ seg, onUpdate, onDelete }) {
 
       {/* Volume */}
       <div className="flex items-center gap-3 mb-3">
-        <span className="text-[9px] text-[#3a7a4c] tracking-widest w-14 shrink-0">VOLUMEN</span>
+        <span className="text-[9px] text-[#3a7a4c] tracking-widest w-14 shrink-0">{t('editor.panel_volume')}</span>
         <input
           type="range"
           min="0"
@@ -1968,7 +2020,7 @@ function AudioSegPanel({ seg, onUpdate, onDelete }) {
 
       {/* Fade out toggle */}
       <div className="flex items-center gap-3 mb-3">
-        <span className="text-[9px] text-[#3a7a4c] tracking-widest w-14 shrink-0">FADE OUT</span>
+        <span className="text-[9px] text-[#3a7a4c] tracking-widest w-14 shrink-0">{t('editor.panel_fade_out')}</span>
         <button
           onClick={() => onUpdate({ fadeOut: !fadeOut })}
           className={`px-3 py-1 rounded border text-[10px] font-bold transition-colors
@@ -1978,17 +2030,17 @@ function AudioSegPanel({ seg, onUpdate, onDelete }) {
         >
           ↘ fade
         </button>
-        <span className="text-[8px] text-[#2a4a30]">fundido de salida suave</span>
+        <span className="text-[8px] text-[#2a4a30]">{t('editor.fade_soft')}</span>
       </div>
 
       {/* Delete track */}
       <div className="flex items-center gap-3">
-        <span className="text-[9px] text-[#3a7a4c] tracking-widest w-14 shrink-0">PISTA</span>
+        <span className="text-[9px] text-[#3a7a4c] tracking-widest w-14 shrink-0">{t('editor.panel_track')}</span>
         <button
           onClick={onDelete}
           className="px-3 py-1 rounded border border-[#2a1a1a] text-[#884040] text-[10px] hover:border-[#3a2020] transition-colors"
         >
-          eliminar
+          {t('editor.delete')}
         </button>
       </div>
 
@@ -2001,6 +2053,7 @@ function AudioSegPanel({ seg, onUpdate, onDelete }) {
 const OVERLAY_ROW_HEIGHT = 42  // 36px tile + 6px gap — used for vertical drag snapping
 
 function OverlayTile({ overlay, zoom, isSelected, onSelect, onStartTimeChange, onDurationChange, onTrackChange, onDelete, snapFn }) {
+  const { t } = useTranslation()
   const width = overlayTileWidth(overlay, zoom)
   const left  = Math.round(overlay.startTime * PX_PER_SEC * zoom)
   const label = overlay.name.replace(/\.[^.]+$/, '')
@@ -2089,7 +2142,7 @@ function OverlayTile({ overlay, zoom, isSelected, onSelect, onStartTimeChange, o
           onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => { e.stopPropagation(); onDelete() }}
           className="absolute top-0.5 left-1/2 -translate-x-1/2 w-4 h-4 rounded bg-black bg-opacity-75 flex items-center justify-center hover:bg-opacity-95 transition-opacity z-10"
-          aria-label="Eliminar capa"
+          aria-label={t('editor.delete_layer_aria')}
         >
           <svg width="7" height="7" viewBox="0 0 8 8" fill="none" aria-hidden="true">
             <path d="M1 1l6 6M7 1L1 7" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
@@ -2291,6 +2344,7 @@ function OverlayElement({ overlay, canvasW, isSelected, onSelect, onMove, onResi
 // ── OverlayPanel — controls for a selected overlay ────────────────────────────
 
 function OverlayPanel({ overlay, maxTrack, onUpdate, onTrackChange, onDelete }) {
+  const { t } = useTranslation()
   const opacity    = overlay.opacity    ?? 1
   const widthPct   = overlay.widthPct   ?? 0.35
   const trackIndex = overlay.trackIndex ?? 0
@@ -2300,7 +2354,7 @@ function OverlayPanel({ overlay, maxTrack, onUpdate, onTrackChange, onDelete }) 
 
       {/* Size */}
       <div className="flex items-center gap-3 mb-3">
-        <span className="text-[9px] text-[#7a5cae] tracking-widest w-14 shrink-0">TAMAÑO</span>
+        <span className="text-[9px] text-[#7a5cae] tracking-widest w-14 shrink-0">{t('editor.panel_size')}</span>
         <input
           type="range"
           min="0.05"
@@ -2320,7 +2374,7 @@ function OverlayPanel({ overlay, maxTrack, onUpdate, onTrackChange, onDelete }) 
       {overlay.type === 'video' && (
         <>
           <div className="flex items-center gap-3 mb-3">
-            <span className="text-[9px] text-[#7a5cae] tracking-widest w-14 shrink-0">VELOCIDAD</span>
+            <span className="text-[9px] text-[#7a5cae] tracking-widest w-14 shrink-0">{t('editor.panel_speed')}</span>
             <div className="flex gap-1.5">
               {[0.5, 1, 2].map((s) => (
                 <button
@@ -2338,7 +2392,7 @@ function OverlayPanel({ overlay, maxTrack, onUpdate, onTrackChange, onDelete }) 
           </div>
 
           <div className="flex items-center gap-3 mb-3">
-            <span className="text-[9px] text-[#7a5cae] tracking-widest w-14 shrink-0">VOLUMEN</span>
+            <span className="text-[9px] text-[#7a5cae] tracking-widest w-14 shrink-0">{t('editor.panel_volume')}</span>
             <input
               type="range" min="0" max="1" step="0.01"
               value={overlay.muted ? 0 : (overlay.volume ?? 1)}
@@ -2352,14 +2406,14 @@ function OverlayPanel({ overlay, maxTrack, onUpdate, onTrackChange, onDelete }) 
           </div>
 
           <div className="flex items-center gap-3 mb-3">
-            <span className="text-[9px] text-[#7a5cae] tracking-widest w-14 shrink-0">AUDIO</span>
+            <span className="text-[9px] text-[#7a5cae] tracking-widest w-14 shrink-0">{t('editor.panel_audio')}</span>
             <button
               onClick={() => onUpdate({ muted: !(overlay.muted ?? false) })}
               className={`w-8 h-8 rounded border flex items-center justify-center transition-colors
                 ${(overlay.muted ?? false)
                   ? 'bg-[#7c5a9e] border-[#7c5a9e] text-white'
                   : 'bg-transparent border-[#2a1f4a] text-[#7a5cae] hover:border-[#4a3a6a] hover:text-[#9a7cbe]'}`}
-              aria-label={(overlay.muted ?? false) ? 'Activar audio' : 'Silenciar'}
+              aria-label={(overlay.muted ?? false) ? t('editor.unmute') : t('editor.mute')}
             >
               {(overlay.muted ?? false) ? <IconMuted size={14}/> : <IconVolume size={14}/>}
             </button>
@@ -2369,7 +2423,7 @@ function OverlayPanel({ overlay, maxTrack, onUpdate, onTrackChange, onDelete }) 
 
       {/* Opacity */}
       <div className="flex items-center gap-3 mb-3">
-        <span className="text-[9px] text-[#7a5cae] tracking-widest w-14 shrink-0">OPACIDAD</span>
+        <span className="text-[9px] text-[#7a5cae] tracking-widest w-14 shrink-0">{t('editor.panel_opacity')}</span>
         <input
           type="range"
           min="0.1"
@@ -2387,12 +2441,12 @@ function OverlayPanel({ overlay, maxTrack, onUpdate, onTrackChange, onDelete }) 
 
       {/* Delete */}
       <div className="flex items-center gap-3 pt-3 border-t border-[#1a1428]">
-        <span className="text-[9px] text-[#7a5cae] tracking-widest w-14 shrink-0">CAPA</span>
+        <span className="text-[9px] text-[#7a5cae] tracking-widest w-14 shrink-0">{t('editor.panel_layer')}</span>
         <button
           onClick={onDelete}
           className="px-3 py-1 rounded border border-[#2a1a1a] text-[#884040] text-[10px] hover:border-[#3a2020] transition-colors"
         >
-          eliminar
+          {t('editor.delete')}
         </button>
       </div>
 
@@ -2405,6 +2459,7 @@ function OverlayPanel({ overlay, maxTrack, onUpdate, onTrackChange, onDelete }) 
 const TEXT_ROW_HEIGHT = 42  // same as OVERLAY_ROW_HEIGHT for consistent vertical drag
 
 function TextTile({ text, zoom, isSelected, onSelect, onStartTimeChange, onDurationChange, onTrackChange, onDelete, snapFn }) {
+  const { t } = useTranslation()
   const width = Math.max(MIN_CLIP_PX, text.duration * PX_PER_SEC * zoom)
   const left  = Math.round(text.startTime * PX_PER_SEC * zoom)
   const label = text.content.length > 20 ? text.content.slice(0, 20) + '…' : text.content
@@ -2476,7 +2531,7 @@ function TextTile({ text, zoom, isSelected, onSelect, onStartTimeChange, onDurat
           onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => { e.stopPropagation(); onDelete() }}
           className="absolute top-0.5 left-1/2 -translate-x-1/2 w-4 h-4 rounded bg-black bg-opacity-75 flex items-center justify-center hover:bg-opacity-95 transition-opacity z-10"
-          aria-label="Eliminar texto"
+          aria-label={t('editor.delete_text_aria')}
         >
           <svg width="7" height="7" viewBox="0 0 8 8" fill="none" aria-hidden="true">
             <path d="M1 1l6 6M7 1L1 7" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
@@ -2666,6 +2721,7 @@ function TextElement({ text, canvasH, isSelected, isEditing, onSelect, onMove, o
 // ── TextPanel — controls for a selected text layer ────────────────────────────
 
 function TextPanel({ text, onUpdate, onEdit, onDelete }) {
+  const { t } = useTranslation()
   const opacity    = text.opacity    ?? 1
   const fontSize   = text.fontSize   ?? 0.08
   const fontFamily = text.fontFamily ?? 'sans'
@@ -2678,22 +2734,22 @@ function TextPanel({ text, onUpdate, onEdit, onDelete }) {
 
       {/* Content + edit button */}
       <div className="flex items-start gap-3 mb-3">
-        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0 pt-1">TEXTO</span>
+        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0 pt-1">{t('editor.panel_text_label')}</span>
         <div className="flex-1 min-w-0">
           <div
             className="text-[10px] text-[#c8b040] bg-[#1e1a05] border border-[#2e2a0a] rounded px-2 py-1 truncate cursor-pointer hover:border-[#4a4010] transition-colors"
             onClick={onEdit}
-            title="Pulsa para editar"
+            title={t('editor.text_edit_tooltip')}
           >
-            {text.content || <span className="text-[#4a4010] italic">vacío</span>}
+            {text.content || <span className="text-[#4a4010] italic">{t('editor.text_empty')}</span>}
           </div>
-          <p className="text-[8px] text-[#4a4010] mt-0.5">pulsa en el canvas para editar · doble clic</p>
+          <p className="text-[8px] text-[#4a4010] mt-0.5">{t('editor.text_edit_hint')}</p>
         </div>
       </div>
 
       {/* Font family */}
       <div className="flex items-center gap-3 mb-3">
-        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0">FUENTE</span>
+        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0">{t('editor.panel_font')}</span>
         <div className="flex gap-1 flex-wrap">
           {Object.keys(FONT_FAMILIES).map((key) => (
             <button
@@ -2713,7 +2769,7 @@ function TextPanel({ text, onUpdate, onEdit, onDelete }) {
 
       {/* Bold + Italic */}
       <div className="flex items-center gap-3 mb-3">
-        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0">ESTILO</span>
+        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0">{t('editor.panel_style')}</span>
         <div className="flex gap-1.5">
           <button
             onClick={() => onUpdate({ bold: !bold })}
@@ -2730,7 +2786,7 @@ function TextPanel({ text, onUpdate, onEdit, onDelete }) {
 
       {/* Font size */}
       <div className="flex items-center gap-3 mb-3">
-        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0">TAMAÑO</span>
+        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0">{t('editor.panel_size')}</span>
         <input
           type="range" min="0.02" max="0.4" step="0.005"
           value={fontSize}
@@ -2745,7 +2801,7 @@ function TextPanel({ text, onUpdate, onEdit, onDelete }) {
 
       {/* Color */}
       <div className="flex items-center gap-3 mb-3">
-        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0">COLOR</span>
+        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0">{t('editor.panel_color')}</span>
         <div className="flex gap-1.5 flex-wrap items-center">
           {TEXT_PRESET_COLORS.map((c) => (
             <button
@@ -2760,7 +2816,7 @@ function TextPanel({ text, onUpdate, onEdit, onDelete }) {
             value={color}
             onChange={(e) => onUpdate({ color: e.target.value })}
             className="w-5 h-5 rounded cursor-pointer border-0 bg-transparent"
-            title="Color personalizado"
+            title={t('editor.custom_color')}
             style={{ padding: 0 }}
           />
         </div>
@@ -2768,7 +2824,7 @@ function TextPanel({ text, onUpdate, onEdit, onDelete }) {
 
       {/* Opacity */}
       <div className="flex items-center gap-3 mb-3">
-        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0">OPACIDAD</span>
+        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0">{t('editor.panel_opacity')}</span>
         <input
           type="range" min="0.1" max="1" step="0.05"
           value={opacity}
@@ -2783,12 +2839,12 @@ function TextPanel({ text, onUpdate, onEdit, onDelete }) {
 
       {/* Delete */}
       <div className="flex items-center gap-3 pt-3 border-t border-[#1e1a05]">
-        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0">CAPA</span>
+        <span className="text-[9px] text-[#8c7a20] tracking-widest w-14 shrink-0">{t('editor.panel_layer')}</span>
         <button
           onClick={onDelete}
           className="px-3 py-1 rounded border border-[#2a1a1a] text-[#884040] text-[10px] hover:border-[#3a2020] transition-colors"
         >
-          eliminar
+          {t('editor.delete')}
         </button>
       </div>
 

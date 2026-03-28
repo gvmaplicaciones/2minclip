@@ -6,9 +6,9 @@
 
 ## Estado actual
 
-- **Tarea en curso**: Tarea 8 — Exportar vídeo con FFmpeg.wasm
+- **Tarea en curso**: ninguna — todas las tareas principales completadas
 - **Última sesión**: 2026-03-28
-- **Próximo paso exacto**: implementar exportación real MP4 H.264 usando `@ffmpeg/ffmpeg` + `@ffmpeg/util`. Mostrar progreso, descargar archivo resultante.
+- **Próximo paso exacto**: revisar con el usuario qué mejoras o funciones nuevas quiere abordar a continuación.
 
 ---
 
@@ -110,11 +110,12 @@
 
 ---
 
-## Árbol de archivos relevantes
+## Árbol de archivos relevantes (actualizado)
 
 ```
 package.json                        — todas las dependencias del proyecto
-vite.config.js                      — Vite + headers COOP/COEP para FFmpeg
+vite.config.js                      — Vite + headers COOP/COEP + optimizeDeps.exclude FFmpeg
+vercel.json                         — headers COOP/COEP para producción en Vercel
 tailwind.config.js                  — sistema de colores (#0f0f0f, #e87040, etc.)
 postcss.config.js                   — PostCSS para Tailwind
 index.html                          — meta SEO, OG, Twitter Card, JSON-LD, hreflang
@@ -122,21 +123,25 @@ src/main.jsx                        — entry point: importa i18n antes que App
 src/App.jsx                         — router: / → Landing, /en → Landing(en), /editor → Editor + SessionWarningBar global
 src/i18n.js                         — config i18next: detección navegador, fallback ES
 src/index.css                       — Tailwind + clases reutilizables (btn-primary, pill)
-src/locales/es.json                 — todos los textos en español
-src/locales/en.json                 — todos los textos en inglés
+src/locales/es.json                 — todos los textos en español (incluye tutorial.*)
+src/locales/en.json                 — todos los textos en inglés (incluye tutorial.*)
 src/config/features.js              — feature flags (todo apagado en v1)
 src/context/EditorContext.jsx       — contexto global: ratio (9:16/16:9/1:1), clips, setClips
 src/hooks/useCanvas.js              — calcula canvasStyle/wrapperClass según ratio
+src/hooks/useExport.js              — exportación FFmpeg.wasm: filter_complex, progreso, cancel
 src/utils/videoMeta.js              — readVideoMeta() y generateThumbnail() compartidos entre Landing y Editor
-src/pages/Landing.jsx               — landing: upload zone múltiple + selector formato (9:16/16:9/1:1) + CTA bloqueado; layout desktop 2 columnas max-w-6xl
-src/pages/FormatSelector.jsx        — conservado pero sin ruta activa (obsoleto post-adaptación)
-src/pages/Editor.jsx                — editor completo: canvas + timeline + audio + undo/redo + barra de acción
+src/pages/Landing.jsx               — landing: upload zone múltiple + selector formato + CTA bloqueado; layout desktop 2 columnas max-w-6xl
+src/pages/Editor.jsx                — editor completo: canvas + timeline + audio + undo/redo + zoom +/- + tutorial + exportar
 src/components/LanguageSwitcher.jsx — selector ES/EN, cambia idioma + sincroniza URL
 src/components/AdSlot.jsx           — placeholder AdSense (invisible hasta ADS_ENABLED=true)
 src/components/SessionWarningBar.jsx — barra fina fija naranja en todas las pantallas (en App.jsx, fuera de Routes)
+src/components/ExportModal.jsx      — modal de exportación: progreso, descarga, error, cancelar
+src/components/TutorialModal.jsx    — modal tutorial 6 slides: welcome, clips, zoom, edición, capas, exportar
 public/sitemap.xml                  — URLs ES y EN con hreflang
 public/robots.txt                   — allow all + referencia sitemap
 public/favicon.svg                  — favicon SVG del logo
+public/ffmpeg-core.js               — FFmpeg ESM core (copiado de node_modules/@ffmpeg/core/dist/esm/)
+public/ffmpeg-core.wasm             — FFmpeg WASM binary
 ```
 
 ---
@@ -190,13 +195,24 @@ public/favicon.svg                  — favicon SVG del logo
   - Textos visibles/ocultos en `playTick` cada frame según `startTime`/`duration` del cabezal
   - Botón `+ Texto` en la barra de acción; deselección de texto al hacer click en fondo del canvas o timeline
 
+- [x] **Tarea 8 — Exportar vídeo con FFmpeg.wasm**
+  - `src/hooks/useExport.js` — hook completo: carga FFmpeg ESM desde `/public/ffmpeg-core.js` + `/ffmpeg-core.wasm` (archivos copiados de `node_modules/@ffmpeg/core/dist/esm/`); escribe todos los inputs al FS virtual; construye `filter_complex` con trim, setpts, scale/pad letterbox, concat, atrim, atempo, adelay, afade, amix, overlay; descarga MP4 H.264
+  - `src/components/ExportModal.jsx` — modal con estados: loading (spinner + barra progreso), done (botón descarga + auto-click), error (mensaje + reintentar). Botón "Cancelar y volver" llama a `cancel()` que hace `ffmpeg.terminate()` para parar el worker inmediatamente
+  - `vercel.json` — headers COOP/COEP para producción
+  - `vite.config.js` — `optimizeDeps.exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util']` para evitar error de worker en dev
+  - Progreso falso con ticker exponencial (`startTicker`): sube despacio cerca del techo 93%, sin decimales (siempre `Math.round`)
+  - Canvas helpers: `renderTextLayerToPng`, `renderImageLayerToPng` para convertir capas a PNG antes de pasarlas a FFmpeg
+
+- [x] **UX del editor — mejoras sesión 2026-03-28**
+  - **Play/Pause en barra timecode**: botón circular naranja entre el indicador de zoom y el timecode
+  - **Diálogo de confirmación al salir**: botón "← Volver" abre modal de aviso antes de navegar a `/`
+  - **Zoom mínimo ampliado**: `ZOOM_MIN = 0.05` (antes 0.3) para ver el timeline de un vistazo
+  - **Pinch zoom móvil arreglado**: handler `capture: true` a nivel `window` que despacha un `touchcancel` sintético al primer dedo para cancelar dnd-kit antes de que procese el segundo toque
+  - **Botones Zoom + / Zoom −** en la barra timecode: cada clic multiplica/divide el zoom por 1.35; i18n en `editor.zoom_in` / `editor.zoom_out`
+  - **Botón Tutorial** en la nav (junto a Exportar): abre `TutorialModal` con 6 diapositivas visuales
+  - `src/components/TutorialModal.jsx` — modal de tutorial con 6 slides (bienvenida, clips, timeline, edición, capas, exportar), navegación anterior/siguiente, dots indicadores, bilingüe ES/EN via i18n
+  - Claves i18n añadidas: `editor.zoom_in`, `editor.zoom_out`, `editor.tutorial_btn`, sección `tutorial.*` completa (ES + EN)
+
 ---
 
-## Siguiente tarea
-
-**Tarea 8 — Exportar vídeo con FFmpeg.wasm**
-- Usar `@ffmpeg/ffmpeg` + `@ffmpeg/util` (ya en package.json)
-- Vite config ya tiene headers COOP/COEP para SharedArrayBuffer
-- Mostrar modal de progreso durante la exportación
-- Descargar MP4 H.264 resultante sin marca de agua
-- Incluir clips con trim + velocidad + volumen; pistas de audio mezcladas; overlays de imagen/vídeo; capas de texto renderizadas
+## Árbol de archivos relevantes (actualizado)
