@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
+import i18n from '../i18n'
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile } from '@ffmpeg/util'
 
@@ -24,10 +24,10 @@ function canvasToPng(canvas) {
 }
 
 async function renderTextLayerToPng(text, CW, CH) {
-  const canvas = document.createElement('canvas')
+  const canvas = document.createElemeni18n.t('canvas')
   canvas.width = CW
   canvas.height = CH
-  const ctx = canvas.getContext('2d')
+  const ctx = canvas.getContexi18n.t('2d')
 
   const fontSize = Math.max(8, Math.round(text.fontSize * CH))
   const families = {
@@ -52,10 +52,10 @@ async function renderTextLayerToPng(text, CW, CH) {
 }
 
 async function renderImageLayerToPng(overlay, CW, CH) {
-  const canvas = document.createElement('canvas')
+  const canvas = document.createElemeni18n.t('canvas')
   canvas.width  = CW
   canvas.height = CH
-  const ctx = canvas.getContext('2d')
+  const ctx = canvas.getContexi18n.t('2d')
 
   const img = await new Promise((res, rej) => {
     const el = new Image()
@@ -85,7 +85,6 @@ function easedProgress(p) {
 }
 
 export function useExport() {
-  const { t } = useTranslation()
   const ffmpegRef    = useRef(null)
   const tickerRef    = useRef(null)   // setInterval id for fake progress
   const [status,      setStatus]      = useState('idle')   // idle | loading | processing | done | error
@@ -162,11 +161,11 @@ export function useExport() {
     setDownloadUrl(null)
 
     try {
-      setPhase(t('export.phase_loading'))
+      setPhase(i18n.t('export.phase_loading'))
       const ffmpeg = await loadFFmpeg()
 
       setStatus('processing')
-      setPhase(t('export.phase_preparing'))
+      setPhase(i18n.t('export.phase_preparing'))
       setProgress(10)
 
       const { w: CW, h: CH } = CANVAS_SIZES[ratio] ?? { w: 1280, h: 720 }
@@ -179,9 +178,9 @@ export function useExport() {
       const clipInputs = []
       for (let i = 0; i < clips.length; i++) {
         const clip = clips[i]
-        const ext  = clip.name.split('.').pop().toLowerCase() || 'mp4'
+        const ext  = clip.name.splii18n.t('.').pop().toLowerCase() || 'mp4'
         const fname = `clip${idx}.${ext}`
-        setPhase(t('export.phase_clip', { n: i + 1, total: clips.length }))
+        setPhase(i18n.t('export.phase_clip', { n: i + 1, total: clips.length }))
         await ffmpeg.writeFile(fname, await fetchFile(clip.file))
         ffArgs.push('-i', fname)
         clipInputs.push({ clip, fname, idx: idx++ })
@@ -191,7 +190,7 @@ export function useExport() {
       const audioInputs = []
       for (const track of audioTracks) {
         for (const seg of track.segments) {
-          const ext   = seg.name.split('.').pop().toLowerCase() || 'mp3'
+          const ext   = seg.name.splii18n.t('.').pop().toLowerCase() || 'mp3'
           const fname = `audio${idx}.${ext}`
           await ffmpeg.writeFile(fname, await fetchFile(seg.file))
           ffArgs.push('-i', fname)
@@ -203,7 +202,7 @@ export function useExport() {
       const imgInputs = []
       for (const ov of overlays.filter((o) => o.type === 'image')) {
         const fname = `imgov${idx}.png`
-        setPhase(t('export.phase_image'))
+        setPhase(i18n.t('export.phase_image'))
         const blob = await renderImageLayerToPng(ov, CW, CH)
         await ffmpeg.writeFile(fname, await fetchFile(blob))
         ffArgs.push('-i', fname)
@@ -213,7 +212,7 @@ export function useExport() {
       // Video overlays
       const vidOvInputs = []
       for (const ov of overlays.filter((o) => o.type === 'video')) {
-        const ext   = ov.name.split('.').pop().toLowerCase() || 'mp4'
+        const ext   = ov.name.splii18n.t('.').pop().toLowerCase() || 'mp4'
         const fname = `vidov${idx}.${ext}`
         await ffmpeg.writeFile(fname, await fetchFile(ov.objectUrl))
         ffArgs.push('-i', fname)
@@ -224,14 +223,14 @@ export function useExport() {
       const textInputs = []
       for (const t of texts.filter((t) => t.content?.trim())) {
         const fname = `text${idx}.png`
-        setPhase(t('export.phase_text_prep'))
+        setPhase(i18n.t('export.phase_text_prep'))
         const blob = await renderTextLayerToPng(t, CW, CH)
         await ffmpeg.writeFile(fname, await fetchFile(blob))
         ffArgs.push('-i', fname)
         textInputs.push({ t, fname, idx: idx++ })
       }
 
-      setPhase(t('export.phase_exporting'))
+      setPhase(i18n.t('export.phase_exporting'))
       setProgress(15)
       startTicker(15)
 
@@ -375,7 +374,7 @@ export function useExport() {
 
       // ── Read result and trigger download ────────────────────────────────────
       stopTicker()
-      setPhase(t('export.phase_download'))
+      setPhase(i18n.t('export.phase_download'))
       setProgress(97)
 
       const data = await ffmpeg.readFile('output.mp4')
@@ -402,9 +401,9 @@ export function useExport() {
         ? err.message
         : (typeof err === 'string' ? err : JSON.stringify(err))
       if (msg && (msg.includes(':a') || msg.includes('audio') || msg.includes('stream'))) {
-        setErrorMsg(t('export.error_audio'))
+        setErrorMsg(i18n.t('export.error_audio'))
       } else {
-        setErrorMsg(msg || t('export.error_unknown'))
+        setErrorMsg(msg || i18n.t('export.error_unknown'))
       }
       stopTicker()
       setStatus('error')
