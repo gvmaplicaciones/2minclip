@@ -1689,10 +1689,14 @@ function SortableClipTile({ clip, zoom, isSelected, onSelect, onDelete }) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: clip.id, disabled: true })
+  } = useSortable({ id: clip.id })
 
   const outerStyle = {
+    transform: CSS.Transform.toString(transform),
+    transition,
     width: clipWidth(clip, zoom),
+    opacity: isDragging ? 0.45 : 1,
+    zIndex:  isDragging ? 10 : 'auto',
   }
 
   const label = clip.name.replace(/\.[^.]+$/, '')
@@ -1702,8 +1706,10 @@ function SortableClipTile({ clip, zoom, isSelected, onSelect, onDelete }) {
       ref={setNodeRef}
       data-no-seek
       style={outerStyle}
+      {...attributes}
+      {...listeners}
       onClick={(e) => { e.stopPropagation(); onSelect(clip.id) }}
-      className={`flex-shrink-0 h-14 rounded-lg border overflow-hidden flex items-stretch bg-[#1a0d05] relative
+      className={`flex-shrink-0 h-14 rounded-lg border overflow-hidden flex items-stretch cursor-grab active:cursor-grabbing bg-[#1a0d05] relative
         ${isSelected
           ? 'border-white border-opacity-90'
           : 'border-[#e87040] border-opacity-70'}`}
