@@ -102,7 +102,7 @@ function buildFilterComplex({ clipInputs, clipAudioPresence, audioInputs, imgInp
       af += `[ca${i}]`
       fc.push(af)
     } else {
-      fc.push(`anullsrc=r=44100:cl=stereo,atrim=duration=${srcDur.toFixed(4)},asetpts=PTS-STARTPTS[ca${i}]`)
+      fc.push(`aevalsrc=0:c=stereo:r=44100:d=${srcDur.toFixed(4)}[ca${i}]`)
     }
     aStream.push(`[ca${i}]`)
   }
@@ -339,76 +339,38 @@ export function useExport() {
         textInputs.push({ t: txt, fname, idx: idx++ })
       }
 
+      // ── Probe clips for audio stream presence ────────────────────────────────
+      // Run FFmpeg with only the clip inputs and no output — it prints stream
+      // info for every input then exits. We parse which clips have Audio streams.
+      {
+        const probeLogs = []
+        const probeLog  = ({ message }) => probeLogs.push(message)
+        ffmpeg.on('log', probeLog)
+        try { await ffmpeg.exec(clipInputs.flatMap(({ fname }) => ['-i', fname])) } catch (_) {}
+        ffmpeg.off('log', probeLog)
+        // Annotate each clipInput with whether FFmpeg found an Audio stream
+        for (let j = 0; j < clipInputs.length; j++) {
+          clipInputs[j].hasAudio = probeLogs.some(
+            (l) => l.includes(`Stream #${j}:`) && l.includes(' Audio:')
+          )
+        }
+      }
+
       setPhase(tr('export.phase_exporting'))
       setProgress(15)
       startTicker(15)
 
-      // ── First exec attempt: assume all non-muted clips have audio ────────────
-      // clipAudioPresence starts optimistic; corrected on retry if needed
-      let clipAudioPresence = clipInputs.map(({ clip }) => !clip.muted && (clip.volume ?? 1) > 0)
+      // clipAudioPresence: true only if the clip actually has an audio stream
+      const clipAudioPresence = clipInputs.map(({ clip, hasAudio }) =>
+        hasAudio && !clip.muted && (clip.volume ?? 1) > 0
+      )
 
-      let { fcStr, compositeV, compositeA } = buildFilterComplex({
+      const { fcStr, compositeV, compositeA } = buildFilterComplex({
         clipInputs, clipAudioPresence, audioInputs, imgInputs, vidOvInputs, textInputs, CW, CH,
       })
-      let cmd = buildCmd(ffArgs, fcStr, compositeV, compositeA)
+      const cmd = buildCmd(ffArgs, fcStr, compositeV, compositeA)
       console.debug('[FFmpeg] cmd:', cmd.join(' '))
-
-      let execError = null
-      try {
-        await ffmpeg.exec(cmd)
-      } catch (e) {
-        execError = e
-      }
-
-      // ── Retry if clips had no audio stream (FFmpeg aborted with FS error) ───
-      if (execError) {
-        const isNoStream = ffmpegLogs.some((l) => l.includes('matches no streams'))
-        if (!isNoStream) throw execError
-
-        setPhase(tr('export.phase_preparing'))
-        stopTicker()
-
-        // Parse which clips actually had audio from the logs of the failed run
-        clipAudioPresence = clipInputs.map((_, j) =>
-          ffmpegLogs.some((l) => l.includes(`Stream #${j}:`) && l.includes(' Audio:'))
-        )
-        console.debug('[FFmpeg] retry — clip audio presence:', clipAudioPresence)
-
-        // WASM was aborted — terminate and reload a fresh instance
-        if (ffmpegRef.current) { try { ffmpegRef.current.terminate() } catch (_) {} ffmpegRef.current = null }
-        ffmpeg = await loadFFmpeg()
-        ffmpeg.on('log', logHandler)
-
-        // Re-upload all files into the fresh WASM FS
-        for (const { clip, fname } of clipInputs) {
-          await ffmpeg.writeFile(fname, await fetchFile(clip.file))
-        }
-        for (const { seg, fname } of audioInputs) {
-          await ffmpeg.writeFile(fname, await fetchFile(seg.file))
-        }
-        for (const { ov, fname } of imgInputs) {
-          const blob = await renderImageLayerToPng(ov, CW, CH)
-          await ffmpeg.writeFile(fname, await fetchFile(blob))
-        }
-        for (const { ov, fname } of vidOvInputs) {
-          await ffmpeg.writeFile(fname, await fetchFile(ov.objectUrl))
-        }
-        for (const { t: txt, fname } of textInputs) {
-          const blob = await renderTextLayerToPng(txt, CW, CH)
-          await ffmpeg.writeFile(fname, await fetchFile(blob))
-        }
-
-        // Rebuild filter with corrected audio presence and re-run
-        ;({ fcStr, compositeV, compositeA } = buildFilterComplex({
-          clipInputs, clipAudioPresence, audioInputs, imgInputs, vidOvInputs, textInputs, CW, CH,
-        }))
-        cmd = buildCmd(ffArgs, fcStr, compositeV, compositeA)
-        console.debug('[FFmpeg] retry cmd:', cmd.join(' '))
-
-        setProgress(15)
-        startTicker(15)
-        await ffmpeg.exec(cmd)
-      }
+      await ffmpeg.exec(cmd)
 
       // ── Done ─────────────────────────────────────────────────────────────────
       stopTicker()
