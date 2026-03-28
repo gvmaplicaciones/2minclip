@@ -14,6 +14,28 @@ const CANVAS_SIZES = {
 const CORE_JS   = `${location.origin}/ffmpeg-core.js`
 const CORE_WASM = `${location.origin}/ffmpeg-core.wasm`
 
+// Detect if a File/Blob has an audio stream using the browser's media API.
+// Returns true if audio is present or if detection is inconclusive.
+function probeHasAudio(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file)
+    const video = document.createElement('video')
+    video.preload = 'metadata'
+    video.muted = true
+    const done = (result) => { URL.revokeObjectURL(url); resolve(result) }
+    video.onloadedmetadata = () => {
+      // audioTracks is supported in Chrome, Firefox, Safari 14.5+
+      if (video.audioTracks) {
+        done(video.audioTracks.length > 0)
+      } else {
+        done(true) // can't tell → assume yes
+      }
+    }
+    video.onerror = () => done(true) // assume yes on error
+    video.src = url
+  })
+}
+
 // ── Canvas helpers ─────────────────────────────────────────────────────────────
 
 function canvasToPng(canvas) {
@@ -231,6 +253,13 @@ export function useExport() {
         textInputs.push({ t: txt, fname, idx: idx++ })
       }
 
+      // Probe each clip for audio stream presence before building filter_complex.
+      // If a clip has no audio (screen recording, downloaded video without audio,
+      // some HEVC formats), [N:a] in filter_complex crashes FFmpeg with ErrnoError.
+      const clipHasAudio = await Promise.all(
+        clipInputs.map(({ clip }) => probeHasAudio(clip.file))
+      )
+
       setPhase(tr('export.phase_exporting'))
       setProgress(15)
       startTicker(15)
@@ -240,7 +269,8 @@ export function useExport() {
       const vStream = []
       const aStream = []
 
-      for (const { clip, idx: i } of clipInputs) {
+      for (let j = 0; j < clipInputs.length; j++) {
+        const { clip, idx: i } = clipInputs[j]
         const speed  = clip.speed    || 1
         const vol    = clip.muted    ? 0 : (clip.volume ?? 1)
         const ts     = clip.trimStart || 0
@@ -256,8 +286,9 @@ export function useExport() {
         fc.push(vf)
         vStream.push(`[cv${i}]`)
 
-        // Audio: use clip audio if not muted, else generate silence for that slot
-        if (clip.muted || vol === 0) {
+        // If clip has no audio stream (or is muted), generate silence instead
+        // of referencing [N:a] which would crash FFmpeg
+        if (!clipHasAudio[j] || clip.muted || vol === 0) {
           fc.push(`anullsrc=r=44100:cl=stereo,atrim=duration=${srcDur.toFixed(4)},asetpts=PTS-STARTPTS[ca${i}]`)
         } else {
           let af = `[${i}:a]`
