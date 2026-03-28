@@ -76,8 +76,6 @@ async function renderImageLayerToPng(overlay, CW, CH) {
 
 // ── Main hook ──────────────────────────────────────────────────────────────────
 
-// Easing: fast start, slows heavily above 80%
-// p: 0-1 real FFmpeg progress → returns display % (15-92)
 function easedProgress(p) {
   return 15 + Math.pow(p, 0.55) * 77
 }
@@ -153,17 +151,19 @@ export function useExport() {
     setErrorMsg('')
     setDownloadUrl(null)
 
-    // Declared outside try so catch block can reference them
     let ffmpeg = null
     let logHandler = null
-    let workerMounted = false
 
     try {
       setPhase(tr('export.phase_loading'))
       ffmpeg = await loadFFmpeg()
 
-      // Log all FFmpeg output to console for debugging
-      logHandler = ({ message }) => console.debug('[FFmpeg]', message)
+      // Log all FFmpeg output — visible in browser DevTools console
+      const ffmpegLogs = []
+      logHandler = ({ message }) => {
+        console.debug('[FFmpeg]', message)
+        ffmpegLogs.push(message)
+      }
       ffmpeg.on('log', logHandler)
 
       setStatus('processing')
@@ -175,51 +175,31 @@ export function useExport() {
       const ffArgs = []
       let   idx    = 0
 
-      // ── Collect large input files for WORKERFS ─────────────────────────────
-      // WORKERFS mounts File/Blob objects directly without copying into WASM heap.
-      // This prevents "ErrnoError: FS error" on mobile due to WASM memory limits.
-      const workerfsBlobs = []
-
+      // Video clips
       const clipInputs = []
       for (let i = 0; i < clips.length; i++) {
-        const clip  = clips[i]
-        const ext   = clip.name.split('.').pop().toLowerCase() || 'mp4'
+        const clip = clips[i]
+        const ext  = clip.name.split('.').pop().toLowerCase() || 'mp4'
         const fname = `clip${idx}.${ext}`
         setPhase(tr('export.phase_clip', { n: i + 1, total: clips.length }))
-        workerfsBlobs.push({ name: fname, data: clip.file })
-        ffArgs.push('-i', `/input/${fname}`)
+        await ffmpeg.writeFile(fname, await fetchFile(clip.file))
+        ffArgs.push('-i', fname)
         clipInputs.push({ clip, fname, idx: idx++ })
       }
 
+      // Audio track segments
       const audioInputs = []
       for (const track of audioTracks) {
         for (const seg of track.segments) {
           const ext   = seg.name.split('.').pop().toLowerCase() || 'mp3'
           const fname = `audio${idx}.${ext}`
-          workerfsBlobs.push({ name: fname, data: seg.file })
-          ffArgs.push('-i', `/input/${fname}`)
+          await ffmpeg.writeFile(fname, await fetchFile(seg.file))
+          ffArgs.push('-i', fname)
           audioInputs.push({ seg, track, fname, idx: idx++ })
         }
       }
 
-      // Video overlays: fetch as Blob (stays outside WASM heap via WORKERFS)
-      const vidOvInputs = []
-      for (const ov of overlays.filter((o) => o.type === 'video')) {
-        const ext   = ov.name.split('.').pop().toLowerCase() || 'mp4'
-        const fname = `vidov${idx}.${ext}`
-        const blob  = await fetch(ov.objectUrl).then((r) => r.blob())
-        workerfsBlobs.push({ name: fname, data: blob })
-        ffArgs.push('-i', `/input/${fname}`)
-        vidOvInputs.push({ ov, fname, idx: idx++ })
-      }
-
-      // Mount all large inputs at once via WORKERFS
-      await ffmpeg.createDir('/input')
-      await ffmpeg.mount('WORKERFS', { blobs: workerfsBlobs }, '/input')
-      workerMounted = true
-
-      // ── Small canvas-rendered PNGs → writeFile (already in JS memory) ──────
-
+      // Image overlays → render to full-canvas PNG
       const imgInputs = []
       for (const ov of overlays.filter((o) => o.type === 'image')) {
         const fname = `imgov${idx}.png`
@@ -230,6 +210,17 @@ export function useExport() {
         imgInputs.push({ ov, fname, idx: idx++ })
       }
 
+      // Video overlays
+      const vidOvInputs = []
+      for (const ov of overlays.filter((o) => o.type === 'video')) {
+        const ext   = ov.name.split('.').pop().toLowerCase() || 'mp4'
+        const fname = `vidov${idx}.${ext}`
+        await ffmpeg.writeFile(fname, await fetchFile(ov.objectUrl))
+        ffArgs.push('-i', fname)
+        vidOvInputs.push({ ov, fname, idx: idx++ })
+      }
+
+      // Text layers → render to full-canvas PNG
       const textInputs = []
       for (const txt of texts.filter((tx) => tx.content?.trim())) {
         const fname = `text${idx}.png`
@@ -265,13 +256,18 @@ export function useExport() {
         fc.push(vf)
         vStream.push(`[cv${i}]`)
 
-        let af = `[${i}:a]`
-        af += `atrim=start=${ts.toFixed(4)}:duration=${srcDur.toFixed(4)},asetpts=PTS-STARTPTS`
-        if      (speed === 0.5) af += ',atempo=0.5'
-        else if (speed === 2)   af += ',atempo=2.0'
-        af += `,volume=${vol.toFixed(4)}`
-        af += `[ca${i}]`
-        fc.push(af)
+        // Audio: use clip audio if not muted, else generate silence for that slot
+        if (clip.muted || vol === 0) {
+          fc.push(`anullsrc=r=44100:cl=stereo,atrim=duration=${srcDur.toFixed(4)},asetpts=PTS-STARTPTS[ca${i}]`)
+        } else {
+          let af = `[${i}:a]`
+          af += `atrim=start=${ts.toFixed(4)}:duration=${srcDur.toFixed(4)},asetpts=PTS-STARTPTS`
+          if      (speed === 0.5) af += ',atempo=0.5'
+          else if (speed === 2)   af += ',atempo=2.0'
+          af += `,volume=${vol.toFixed(4)}`
+          af += `[ca${i}]`
+          fc.push(af)
+        }
         aStream.push(`[ca${i}]`)
       }
 
@@ -371,6 +367,7 @@ export function useExport() {
         '-y', 'output.mp4',
       )
 
+      console.debug('[FFmpeg] cmd:', cmd.join(' '))
       await ffmpeg.exec(cmd)
 
       stopTicker()
@@ -383,29 +380,22 @@ export function useExport() {
       setStatus('done')
       setProgress(100)
 
-      // Cleanup
       if (logHandler) ffmpeg.off('log', logHandler)
-      if (workerMounted) {
-        try { await ffmpeg.unmount('/input') } catch (_) {}
-        try { await ffmpeg.deleteDir('/input') } catch (_) {}
-      }
-      const smallFiles = [
+      const allFiles = [
+        ...clipInputs.map((x) => x.fname),
+        ...audioInputs.map((x) => x.fname),
         ...imgInputs.map((x) => x.fname),
+        ...vidOvInputs.map((x) => x.fname),
         ...textInputs.map((x) => x.fname),
       ]
-      for (const f of smallFiles) { try { await ffmpeg.deleteFile(f) } catch (_) {} }
+      for (const f of allFiles) { try { await ffmpeg.deleteFile(f) } catch (_) {} }
       try { await ffmpeg.deleteFile('output.mp4') } catch (_) {}
 
     } catch (err) {
       console.error('[Export error]', err)
-
       if (ffmpeg && logHandler) { try { ffmpeg.off('log', logHandler) } catch (_) {} }
-      if (ffmpeg && workerMounted) {
-        try { await ffmpeg.unmount('/input') } catch (_) {}
-        try { await ffmpeg.deleteDir('/input') } catch (_) {}
-      }
 
-      // Terminate the FFmpeg instance so retries start clean
+      // Terminate so the next retry starts with a clean FFmpeg instance
       if (ffmpegRef.current) {
         try { ffmpegRef.current.terminate() } catch (_) {}
         ffmpegRef.current = null
@@ -415,9 +405,7 @@ export function useExport() {
         ? err.message
         : (typeof err === 'string' ? err : JSON.stringify(err))
 
-      if (msg && (msg.includes('ErrnoError') || msg.includes('FS error'))) {
-        setErrorMsg(tr('export.error_memory'))
-      } else if (msg && (msg.includes(':a') || msg.includes('audio') || msg.includes('stream'))) {
+      if (msg && (msg.includes(':a') || msg.includes('audio') || msg.includes('stream'))) {
         setErrorMsg(tr('export.error_audio'))
       } else {
         setErrorMsg(msg || tr('export.error_unknown'))
