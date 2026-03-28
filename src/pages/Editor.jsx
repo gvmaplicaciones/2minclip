@@ -326,31 +326,48 @@ function EditorShell({ ratio, navigate }) {
 
   // ── pinch zoom (mobile) + Ctrl+wheel zoom (desktop) ──
   useEffect(() => {
-    const el = clipsRowRef.current
-    if (!el) return
+    const container = clipsRowRef.current
+    if (!container) return
 
-    function onTouchStart(e) {
-      if (e.touches.length >= 2) {
-        pinchRef.current = getPinchDist(e.touches)
-        // Capture phase: stop dnd-kit (on child clip tiles) from seeing this touch
-        e.stopPropagation()
+    // Registered on window in capture phase so it fires before React's event delegation
+    // and before dnd-kit's TouchSensor activator
+    function onWindowTouchStart(e) {
+      if (e.touches.length < 2) return
+
+      // Only act when the gesture is inside our timeline container
+      let inContainer = false
+      for (let i = 0; i < e.touches.length; i++) {
+        if (container.contains(e.touches[i].target)) { inContainer = true; break }
       }
+      if (!inContainer) return
+
+      pinchRef.current = getPinchDist(e.touches)
+
+      // Cancel dnd-kit's pending 250ms activation timer (or any active drag) by
+      // dispatching touchcancel on the first touch's target. dnd-kit's TouchSensor
+      // registers a touchcancel cleanup listener on that element.
+      try {
+        e.touches[0].target.dispatchEvent(
+          new TouchEvent('touchcancel', { bubbles: true, cancelable: false })
+        )
+      } catch (_) {}
     }
 
+    function onWindowTouchEnd(e) {
+      if (e.touches.length < 2) pinchRef.current = null
+    }
+
+    // Container-level capture for touchmove: prevents dnd-kit from moving clips
+    // while a pinch is in progress and updates the zoom level
     function onTouchMove(e) {
       if (e.touches.length >= 2 && pinchRef.current != null) {
         e.preventDefault()
-        // Capture phase: stop dnd-kit from seeing movement while pinching
         e.stopPropagation()
         const dist  = getPinchDist(e.touches)
         const ratio = dist / pinchRef.current
         pinchRef.current = dist
         setZoom((z) => clampZoom(z * ratio))
       }
-    }
-
-    function onTouchEnd(e) {
-      if (e.touches.length < 2) pinchRef.current = null
     }
 
     function onWheel(e) {
@@ -361,17 +378,16 @@ function EditorShell({ ratio, navigate }) {
       }
     }
 
-    // Use capture:true so our handlers fire BEFORE dnd-kit's listeners on child clip tiles
-    el.addEventListener('touchstart', onTouchStart, { capture: true, passive: true  })
-    el.addEventListener('touchmove',  onTouchMove,  { capture: true, passive: false })
-    el.addEventListener('touchend',   onTouchEnd,   { capture: true, passive: true  })
-    el.addEventListener('wheel',      onWheel,      { passive: false })
+    window.addEventListener('touchstart',    onWindowTouchStart, { capture: true, passive: true  })
+    window.addEventListener('touchend',      onWindowTouchEnd,   { capture: true, passive: true  })
+    container.addEventListener('touchmove',  onTouchMove,        { capture: true, passive: false })
+    container.addEventListener('wheel',      onWheel,            { passive: false })
 
     return () => {
-      el.removeEventListener('touchstart', onTouchStart, { capture: true })
-      el.removeEventListener('touchmove',  onTouchMove,  { capture: true })
-      el.removeEventListener('touchend',   onTouchEnd,   { capture: true })
-      el.removeEventListener('wheel',      onWheel)
+      window.removeEventListener('touchstart',    onWindowTouchStart, { capture: true })
+      window.removeEventListener('touchend',      onWindowTouchEnd,   { capture: true })
+      container.removeEventListener('touchmove',  onTouchMove,        { capture: true })
+      container.removeEventListener('wheel',      onWheel)
     }
   }, [])
 
