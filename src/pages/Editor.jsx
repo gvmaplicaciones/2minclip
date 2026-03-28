@@ -198,6 +198,7 @@ function EditorShell({ ratio, navigate }) {
   const [playheadTime, setPlayheadTime]     = useState(0)
   const [selectedClipId, setSelectedClipId] = useState(null)
   const [isPlaying, setIsPlaying]           = useState(false)
+  const [showBackConfirm, setShowBackConfirm] = useState(false)
 
   const [audioTracks, setAudioTracks]               = useState([])
   const [selectedAudioSegId, setSelectedAudioSegId] = useState(null)
@@ -329,14 +330,18 @@ function EditorShell({ ratio, navigate }) {
     if (!el) return
 
     function onTouchStart(e) {
-      if (e.touches.length === 2) {
+      if (e.touches.length >= 2) {
         pinchRef.current = getPinchDist(e.touches)
+        // Capture phase: stop dnd-kit (on child clip tiles) from seeing this touch
+        e.stopPropagation()
       }
     }
 
     function onTouchMove(e) {
-      if (e.touches.length === 2 && pinchRef.current != null) {
+      if (e.touches.length >= 2 && pinchRef.current != null) {
         e.preventDefault()
+        // Capture phase: stop dnd-kit from seeing movement while pinching
+        e.stopPropagation()
         const dist  = getPinchDist(e.touches)
         const ratio = dist / pinchRef.current
         pinchRef.current = dist
@@ -356,15 +361,16 @@ function EditorShell({ ratio, navigate }) {
       }
     }
 
-    el.addEventListener('touchstart', onTouchStart, { passive: true  })
-    el.addEventListener('touchmove',  onTouchMove,  { passive: false })
-    el.addEventListener('touchend',   onTouchEnd,   { passive: true  })
+    // Use capture:true so our handlers fire BEFORE dnd-kit's listeners on child clip tiles
+    el.addEventListener('touchstart', onTouchStart, { capture: true, passive: true  })
+    el.addEventListener('touchmove',  onTouchMove,  { capture: true, passive: false })
+    el.addEventListener('touchend',   onTouchEnd,   { capture: true, passive: true  })
     el.addEventListener('wheel',      onWheel,      { passive: false })
 
     return () => {
-      el.removeEventListener('touchstart', onTouchStart)
-      el.removeEventListener('touchmove',  onTouchMove)
-      el.removeEventListener('touchend',   onTouchEnd)
+      el.removeEventListener('touchstart', onTouchStart, { capture: true })
+      el.removeEventListener('touchmove',  onTouchMove,  { capture: true })
+      el.removeEventListener('touchend',   onTouchEnd,   { capture: true })
       el.removeEventListener('wheel',      onWheel)
     }
   }, [])
@@ -1131,7 +1137,7 @@ function EditorShell({ ratio, navigate }) {
       {/* ── NAV ── */}
       <nav className="flex items-center justify-between px-4 py-2.5 bg-[#0a0a0a] border-b border-[#1f1f1f] shrink-0 h-[52px]">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => setShowBackConfirm(true)}
           className="text-xs text-[#555] hover:text-[#aaa] transition-colors"
         >
           ← {t('nav.back')}
@@ -1281,7 +1287,7 @@ function EditorShell({ ratio, navigate }) {
         </button>
       </div>
 
-      {/* Timecode + zoom level */}
+      {/* Timecode + zoom level + play/pause */}
       <div className="flex items-center justify-between px-4 py-1 shrink-0">
         <button
           onClick={() => setZoom(1)}
@@ -1290,6 +1296,29 @@ function EditorShell({ ratio, navigate }) {
         >
           {zoom === 1 ? '1×' : `${zoom.toFixed(1)}×`}
         </button>
+
+        {/* Play / Pause */}
+        <button
+          onClick={() => { if (clips.length > 0) togglePlayback() }}
+          disabled={clips.length === 0}
+          className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors
+            ${clips.length > 0
+              ? 'border-[#e87040] border-opacity-60 hover:border-opacity-100 text-[#e87040]'
+              : 'border-[#2a2a2a] text-[#333] cursor-not-allowed'}`}
+          aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
+        >
+          {isPlaying ? (
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+              <rect x="1.5" y="1" width="2.5" height="8" rx="0.5" fill="currentColor"/>
+              <rect x="6" y="1" width="2.5" height="8" rx="0.5" fill="currentColor"/>
+            </svg>
+          ) : (
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+              <polygon points="2,1 2,9 9,5" fill="currentColor"/>
+            </svg>
+          )}
+        </button>
+
         <span className="text-[10px] text-[#444] tabular-nums">
           {formatDuration(clampedPlayhead)} / {formatDuration(totalDuration)}
         </span>
@@ -1588,6 +1617,47 @@ function EditorShell({ ratio, navigate }) {
           className="hidden"
         />
       ))}
+
+      {/* ── BACK CONFIRMATION DIALOG ── */}
+      {showBackConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70"
+          onClick={() => setShowBackConfirm(false)}
+        >
+          <div
+            className="bg-[#141414] border border-[#2a2a2a] rounded-xl px-6 py-5 mx-6 max-w-sm w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Icon */}
+            <div className="flex justify-center mb-3">
+              <div className="w-10 h-10 rounded-full bg-[#2a0808] border border-[#e87040] border-opacity-40 flex items-center justify-center">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <path d="M9 2L9 10" stroke="#e87040" strokeWidth="2" strokeLinecap="round"/>
+                  <circle cx="9" cy="14" r="1.2" fill="#e87040"/>
+                </svg>
+              </div>
+            </div>
+            <p className="text-white text-sm font-semibold text-center mb-1">¿Salir del editor?</p>
+            <p className="text-[#666] text-xs text-center mb-5 leading-relaxed">
+              Vas a perder todo lo realizado. Esta acción no se puede deshacer.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowBackConfirm(false)}
+                className="flex-1 py-2 rounded-lg border border-[#2a2a2a] text-xs text-[#888] hover:text-white hover:border-[#444] transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => navigate('/')}
+                className="flex-1 py-2 rounded-lg bg-[#e87040] text-black text-xs font-bold hover:opacity-90 transition-opacity"
+              >
+                Sí, salir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )
