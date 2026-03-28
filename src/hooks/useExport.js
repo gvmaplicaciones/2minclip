@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback } from 'react'
-import i18n from '../i18n'
+import i18next from 'i18next'
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile } from '@ffmpeg/util'
 
@@ -11,7 +11,6 @@ const CANVAS_SIZES = {
 }
 
 // FFmpeg ESM core files served locally from /public
-// Using direct same-origin URLs — no blob wrapper needed with COOP/COEP same-origin
 const CORE_JS   = `${location.origin}/ffmpeg-core.js`
 const CORE_WASM = `${location.origin}/ffmpeg-core.wasm`
 
@@ -24,10 +23,10 @@ function canvasToPng(canvas) {
 }
 
 async function renderTextLayerToPng(text, CW, CH) {
-  const canvas = document.createElemeni18n.t('canvas')
+  const canvas = document.createElement('canvas')
   canvas.width = CW
   canvas.height = CH
-  const ctx = canvas.getContexi18n.t('2d')
+  const ctx = canvas.getContext('2d')
 
   const fontSize = Math.max(8, Math.round(text.fontSize * CH))
   const families = {
@@ -52,10 +51,10 @@ async function renderTextLayerToPng(text, CW, CH) {
 }
 
 async function renderImageLayerToPng(overlay, CW, CH) {
-  const canvas = document.createElemeni18n.t('canvas')
+  const canvas = document.createElement('canvas')
   canvas.width  = CW
   canvas.height = CH
-  const ctx = canvas.getContexi18n.t('2d')
+  const ctx = canvas.getContext('2d')
 
   const img = await new Promise((res, rej) => {
     const el = new Image()
@@ -80,28 +79,26 @@ async function renderImageLayerToPng(overlay, CW, CH) {
 // Easing: fast start, slows heavily above 80%
 // p: 0-1 real FFmpeg progress → returns display % (15-92)
 function easedProgress(p) {
-  // power < 1 = fast rise then slow tail
   return 15 + Math.pow(p, 0.55) * 77
 }
 
+const tr = (key, opts) => i18next.t(key, opts)
+
 export function useExport() {
   const ffmpegRef    = useRef(null)
-  const tickerRef    = useRef(null)   // setInterval id for fake progress
-  const [status,      setStatus]      = useState('idle')   // idle | loading | processing | done | error
+  const tickerRef    = useRef(null)
+  const [status,      setStatus]      = useState('idle')
   const [phase,       setPhase]       = useState('')
   const [progress,    setProgress]    = useState(0)
   const [errorMsg,    setErrorMsg]    = useState('')
   const [downloadUrl, setDownloadUrl] = useState(null)
 
-  // Fake progress ticker: moves the bar slowly on its own so it never looks frozen.
-  // Rate halves every 10 points above 70 → asymptotically approaches 93% ceiling.
   function startTicker(fromPct) {
     stopTicker()
     let current = fromPct
     tickerRef.current = setInterval(() => {
       const ceiling = 93
       if (current >= ceiling) return
-      // Step shrinks as we approach the ceiling (exponential slowdown)
       const remaining = ceiling - current
       const step = Math.max(0.05, remaining * 0.012)
       current = Math.min(ceiling, current + step)
@@ -126,21 +123,18 @@ export function useExport() {
   }, [])
 
   const cancel = useCallback(() => {
-    // Terminate the FFmpeg worker immediately
     if (ffmpegRef.current) {
       try { ffmpegRef.current.terminate() } catch (_) {}
-      ffmpegRef.current = null  // force reload next time
+      ffmpegRef.current = null
     }
     reset()
   }, [reset])
 
-  // ── FFmpeg loader (lazy, cached) ──
   const loadFFmpeg = useCallback(async () => {
     if (ffmpegRef.current?.loaded) return ffmpegRef.current
 
     const ffmpeg = new FFmpeg()
     ffmpeg.on('progress', ({ progress: p }) => {
-      // Real FFmpeg progress with easing — only advance forward, never go back
       setProgress((prev) => Math.max(prev, Math.round(easedProgress(p))))
     })
 
@@ -153,7 +147,6 @@ export function useExport() {
     return ffmpeg
   }, [])
 
-  // ── Export ──
   const exportVideo = useCallback(async ({ clips, audioTracks, overlays, texts, ratio }) => {
     setStatus('loading')
     setProgress(2)
@@ -161,26 +154,25 @@ export function useExport() {
     setDownloadUrl(null)
 
     try {
-      setPhase(i18n.t('export.phase_loading'))
+      setPhase(tr('export.phase_loading'))
       const ffmpeg = await loadFFmpeg()
 
       setStatus('processing')
-      setPhase(i18n.t('export.phase_preparing'))
+      setPhase(tr('export.phase_preparing'))
       setProgress(10)
 
       const { w: CW, h: CH } = CANVAS_SIZES[ratio] ?? { w: 1280, h: 720 }
 
-      // ── Write inputs to FFmpeg FS ──────────────────────────────────────────
-      const ffArgs = []          // -i flags
+      const ffArgs = []
       let   idx    = 0
 
       // Video clips
       const clipInputs = []
       for (let i = 0; i < clips.length; i++) {
         const clip = clips[i]
-        const ext  = clip.name.splii18n.t('.').pop().toLowerCase() || 'mp4'
+        const ext  = clip.name.split('.').pop().toLowerCase() || 'mp4'
         const fname = `clip${idx}.${ext}`
-        setPhase(i18n.t('export.phase_clip', { n: i + 1, total: clips.length }))
+        setPhase(tr('export.phase_clip', { n: i + 1, total: clips.length }))
         await ffmpeg.writeFile(fname, await fetchFile(clip.file))
         ffArgs.push('-i', fname)
         clipInputs.push({ clip, fname, idx: idx++ })
@@ -190,7 +182,7 @@ export function useExport() {
       const audioInputs = []
       for (const track of audioTracks) {
         for (const seg of track.segments) {
-          const ext   = seg.name.splii18n.t('.').pop().toLowerCase() || 'mp3'
+          const ext   = seg.name.split('.').pop().toLowerCase() || 'mp3'
           const fname = `audio${idx}.${ext}`
           await ffmpeg.writeFile(fname, await fetchFile(seg.file))
           ffArgs.push('-i', fname)
@@ -202,7 +194,7 @@ export function useExport() {
       const imgInputs = []
       for (const ov of overlays.filter((o) => o.type === 'image')) {
         const fname = `imgov${idx}.png`
-        setPhase(i18n.t('export.phase_image'))
+        setPhase(tr('export.phase_image'))
         const blob = await renderImageLayerToPng(ov, CW, CH)
         await ffmpeg.writeFile(fname, await fetchFile(blob))
         ffArgs.push('-i', fname)
@@ -212,7 +204,7 @@ export function useExport() {
       // Video overlays
       const vidOvInputs = []
       for (const ov of overlays.filter((o) => o.type === 'video')) {
-        const ext   = ov.name.splii18n.t('.').pop().toLowerCase() || 'mp4'
+        const ext   = ov.name.split('.').pop().toLowerCase() || 'mp4'
         const fname = `vidov${idx}.${ext}`
         await ffmpeg.writeFile(fname, await fetchFile(ov.objectUrl))
         ffArgs.push('-i', fname)
@@ -221,32 +213,30 @@ export function useExport() {
 
       // Text layers → render to full-canvas PNG
       const textInputs = []
-      for (const t of texts.filter((t) => t.content?.trim())) {
+      for (const txt of texts.filter((tx) => tx.content?.trim())) {
         const fname = `text${idx}.png`
-        setPhase(i18n.t('export.phase_text_prep'))
-        const blob = await renderTextLayerToPng(t, CW, CH)
+        setPhase(tr('export.phase_text_prep'))
+        const blob = await renderTextLayerToPng(txt, CW, CH)
         await ffmpeg.writeFile(fname, await fetchFile(blob))
         ffArgs.push('-i', fname)
-        textInputs.push({ t, fname, idx: idx++ })
+        textInputs.push({ t: txt, fname, idx: idx++ })
       }
 
-      setPhase(i18n.t('export.phase_exporting'))
+      setPhase(tr('export.phase_exporting'))
       setProgress(15)
       startTicker(15)
 
       // ── Build filter_complex ───────────────────────────────────────────────
-      const fc      = []  // filter_complex parts
-      const vStream = []  // per-clip video labels
-      const aStream = []  // per-clip audio labels
+      const fc      = []
+      const vStream = []
+      const aStream = []
 
       for (const { clip, idx: i } of clipInputs) {
-        const speed   = clip.speed    || 1
-        const vol     = clip.muted    ? 0 : (clip.volume ?? 1)
-        const ts      = clip.trimStart || 0
-        const srcDur  = clip.duration          // duration in source file (seconds)
+        const speed  = clip.speed    || 1
+        const vol    = clip.muted    ? 0 : (clip.volume ?? 1)
+        const ts     = clip.trimStart || 0
+        const srcDur = clip.duration
 
-
-        // ── Video ──
         let vf = `[${i}:v]`
         vf += `trim=start=${ts.toFixed(4)}:duration=${srcDur.toFixed(4)},setpts=PTS-STARTPTS`
         if (speed !== 1) vf += `,setpts=PTS/${speed.toFixed(4)}`
@@ -257,7 +247,6 @@ export function useExport() {
         fc.push(vf)
         vStream.push(`[cv${i}]`)
 
-        // ── Audio ──
         let af = `[${i}:a]`
         af += `atrim=start=${ts.toFixed(4)}:duration=${srcDur.toFixed(4)},asetpts=PTS-STARTPTS`
         if      (speed === 0.5) af += ',atempo=0.5'
@@ -268,7 +257,6 @@ export function useExport() {
         aStream.push(`[ca${i}]`)
       }
 
-      // Concat clips
       let compositeV, compositeA
       if (clips.length === 1) {
         compositeV = vStream[0]
@@ -280,13 +268,12 @@ export function useExport() {
         compositeA = '[concata]'
       }
 
-      // External audio tracks
       const mixSources = [compositeA]
       for (const { seg, track, idx: i } of audioInputs) {
-        const vol       = seg.volume ?? 1
-        const startMs   = Math.round((track.startOffset || 0) * 1000)
-        const ts        = seg.trimStart || 0
-        const dur       = seg.duration
+        const vol     = seg.volume ?? 1
+        const startMs = Math.round((track.startOffset || 0) * 1000)
+        const ts      = seg.trimStart || 0
+        const dur     = seg.duration
 
         let af = `[${i}:a]`
         af += `atrim=start=${ts.toFixed(4)}:duration=${dur.toFixed(4)},asetpts=PTS-STARTPTS`
@@ -307,7 +294,6 @@ export function useExport() {
         compositeA = '[mixaudio]'
       }
 
-      // Image overlays (full-canvas transparent PNGs → overlay at 0,0)
       for (const { ov, idx: i } of imgInputs) {
         const start = (ov.startTime || 0).toFixed(4)
         const end   = ((ov.startTime || 0) + (ov.duration || 5)).toFixed(4)
@@ -316,16 +302,15 @@ export function useExport() {
         compositeV = next
       }
 
-      // Video overlays
       for (const { ov, idx: i } of vidOvInputs) {
-        const speed   = ov.speed || 1
-        const ts      = ov.trimStart || 0
-        const srcDur  = ov.duration
-        const w       = Math.round((ov.widthPct ?? 0.35) * CW)
-        const x       = Math.round(ov.x * CW - w / 2)
-        const y       = Math.round(ov.y * CH - w / 2)  // approximate; aspect handled by scale
-        const start   = (ov.startTime || 0).toFixed(4)
-        const end     = ((ov.startTime || 0) + srcDur / speed).toFixed(4)
+        const speed  = ov.speed || 1
+        const ts     = ov.trimStart || 0
+        const srcDur = ov.duration
+        const w      = Math.round((ov.widthPct ?? 0.35) * CW)
+        const x      = Math.round(ov.x * CW - w / 2)
+        const y      = Math.round(ov.y * CH - w / 2)
+        const start  = (ov.startTime || 0).toFixed(4)
+        const end    = ((ov.startTime || 0) + srcDur / speed).toFixed(4)
 
         let ovf = `[${i}:v]`
         ovf += `trim=start=${ts.toFixed(4)}:duration=${srcDur.toFixed(4)},setpts=PTS-STARTPTS`
@@ -339,16 +324,14 @@ export function useExport() {
         compositeV = next
       }
 
-      // Text overlays (full-canvas transparent PNGs)
-      for (const { t, idx: i } of textInputs) {
-        const start = (t.startTime || 0).toFixed(4)
-        const end   = ((t.startTime || 0) + (t.duration || 5)).toFixed(4)
+      for (const { t: txt, idx: i } of textInputs) {
+        const start = (txt.startTime || 0).toFixed(4)
+        const end   = ((txt.startTime || 0) + (txt.duration || 5)).toFixed(4)
         const next  = `[textv${i}]`
         fc.push(`${compositeV}[${i}:v]overlay=0:0:enable='between(t,${start},${end})'${next}`)
         compositeV = next
       }
 
-      // ── Assemble full ffmpeg command ───────────────────────────────────────
       const cmd = [...ffArgs]
 
       if (fc.length > 0) {
@@ -372,9 +355,8 @@ export function useExport() {
 
       await ffmpeg.exec(cmd)
 
-      // ── Read result and trigger download ────────────────────────────────────
       stopTicker()
-      setPhase(i18n.t('export.phase_download'))
+      setPhase(tr('export.phase_download'))
       setProgress(97)
 
       const data = await ffmpeg.readFile('output.mp4')
@@ -383,7 +365,6 @@ export function useExport() {
       setStatus('done')
       setProgress(100)
 
-      // Cleanup FS
       const allFiles = [
         ...clipInputs.map((x) => x.fname),
         ...audioInputs.map((x) => x.fname),
@@ -396,14 +377,13 @@ export function useExport() {
 
     } catch (err) {
       console.error('[Export error]', err)
-      // Stringify err regardless of its shape (Error, string, object, etc.)
       const msg = err instanceof Error
         ? err.message
         : (typeof err === 'string' ? err : JSON.stringify(err))
       if (msg && (msg.includes(':a') || msg.includes('audio') || msg.includes('stream'))) {
-        setErrorMsg(i18n.t('export.error_audio'))
+        setErrorMsg(tr('export.error_audio'))
       } else {
-        setErrorMsg(msg || i18n.t('export.error_unknown'))
+        setErrorMsg(msg || tr('export.error_unknown'))
       }
       stopTicker()
       setStatus('error')
