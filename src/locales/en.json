@@ -160,6 +160,7 @@
     "phase_exporting": "Exporting video…",
     "phase_download": "Preparing download...",
     "error_audio": "Audio error: try muting clips without audio in the edit panel and export again.",
+    "error_memory": "Not enough memory to process this video. Try a shorter clip or use a desktop browser.",
     "error_unknown": "Unknown error. Open the browser console (F12) to see the details."
   },
   "errors": {

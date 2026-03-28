@@ -160,6 +160,7 @@
     "phase_exporting": "Exportando vídeo…",
     "phase_download": "Preparando descarga...",
     "error_audio": "Error de audio: prueba a silenciar los clips sin audio en el panel de edición y vuelve a exportar.",
+    "error_memory": "Memoria insuficiente para procesar este vídeo. Prueba con un clip más corto o usa un navegador de escritorio.",
     "error_unknown": "Error desconocido. Abre la consola del navegador (F12) para ver el detalle."
   },
   "errors": {
