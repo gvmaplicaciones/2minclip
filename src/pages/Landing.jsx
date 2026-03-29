@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Helmet } from 'react-helmet-async'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { useEditor } from '../context/EditorContext'
 import { readVideoMeta } from '../utils/videoMeta'
@@ -99,7 +100,27 @@ export default function Landing({ lang }) {
     navigate('/editor')
   }
 
+  const isEn = i18n.language === 'en'
+
   return (
+    <>
+      <Helmet>
+        {isEn ? (
+          <title>Free Online Video Editor | 2minclip — No install, no signup</title>
+        ) : (
+          <title>Editor de vídeo online gratis | 2minclip — Sin instalar, sin registrarse</title>
+        )}
+        {isEn ? (
+          <meta name="description" content="Edit your videos online for free in 2 minutes. Cut, merge, add music and export to MP4 with no install and no account required." />
+        ) : (
+          <meta name="description" content="Edita tus vídeos online gratis en 2 minutos. Corta, une, añade música y exporta en MP4 sin instalar nada ni crear cuenta." />
+        )}
+        <link rel="canonical" href={isEn ? 'https://2minclip.com/en' : 'https://2minclip.com'} />
+        <link rel="alternate" hreflang="es" href="https://2minclip.com" />
+        <link rel="alternate" hreflang="en" href="https://2minclip.com/en" />
+        <link rel="alternate" hreflang="x-default" href="https://2minclip.com" />
+      </Helmet>
+
     <div className="min-h-screen bg-[#0f0f0f] text-white font-sans">
 
       {/* ── NAV ── */}
@@ -313,6 +334,7 @@ export default function Landing({ lang }) {
       </footer>
 
     </div>
+    </>
   )
 }
 
