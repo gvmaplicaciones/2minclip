@@ -19,7 +19,7 @@ export default function LanguageSwitcher() {
     }
   }
 
-  const flags = { es: '🇪🇸', en: '🇬🇧' }
+  const codes = { es: 'es', en: 'gb' }
   const labels = { es: 'ES', en: 'EN' }
 
   return (
@@ -28,10 +28,10 @@ export default function LanguageSwitcher() {
       className="flex items-center gap-1.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded-md px-3 py-1.5 text-xs font-medium hover:border-[#444] transition-colors"
       aria-label="Cambiar idioma / Switch language"
     >
-      <span className="text-base leading-none">{flags[currentLang]}</span>
+      <span className={`fi fi-${codes[currentLang]} rounded-sm`} style={{ width: '1.2em', height: '0.9em', display: 'inline-block' }} />
       <span className="text-[#e87040] font-bold">{labels[currentLang]}</span>
       <span className="text-[#333]">→</span>
-      <span className="text-base leading-none">{flags[otherLang]}</span>
+      <span className={`fi fi-${codes[otherLang]} rounded-sm`} style={{ width: '1.2em', height: '0.9em', display: 'inline-block' }} />
       <span className="text-[#555]">{labels[otherLang]}</span>
     </button>
   )
