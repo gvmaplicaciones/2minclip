@@ -45,6 +45,10 @@
     "faq_5_a": "MP4, MOV and WebM. For audio: MP3, AAC and WAV.",
     "faq_6_q": "Is it safe to upload my videos?",
     "faq_6_a": "Your videos never leave your device. All processing happens in your own browser using FFmpeg.wasm. Nothing is uploaded to any server.",
+    "feat1": "Trim, merge and reorder clips",
+    "feat2": "Add audio, text and images",
+    "feat3": "Export to MP4 H.264 with no watermark",
+    "feat4": "100% in your browser — your videos never leave your device",
     "footer": "© 2025 2minclip — Free online video editor"
   },
   "format_selector": {

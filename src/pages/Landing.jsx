@@ -161,10 +161,10 @@ export default function Landing({ lang }) {
 
               {/* Features list — solo desktop */}
               <ul className="hidden md:block space-y-3 text-sm text-[#666]">
-                <li className="flex items-center gap-2"><span className="text-[#e87040]">✓</span> Corta, une y reordena clips</li>
-                <li className="flex items-center gap-2"><span className="text-[#e87040]">✓</span> Añade audio, texto e imágenes</li>
-                <li className="flex items-center gap-2"><span className="text-[#e87040]">✓</span> Exporta en MP4 H.264 sin marca de agua</li>
-                <li className="flex items-center gap-2"><span className="text-[#e87040]">✓</span> 100% en tu navegador — tus vídeos no salen de tu dispositivo</li>
+                <li className="flex items-center gap-2"><span className="text-[#e87040]">✓</span> {t('landing.feat1')}</li>
+                <li className="flex items-center gap-2"><span className="text-[#e87040]">✓</span> {t('landing.feat2')}</li>
+                <li className="flex items-center gap-2"><span className="text-[#e87040]">✓</span> {t('landing.feat3')}</li>
+                <li className="flex items-center gap-2"><span className="text-[#e87040]">✓</span> {t('landing.feat4')}</li>
               </ul>
             </div>
 
