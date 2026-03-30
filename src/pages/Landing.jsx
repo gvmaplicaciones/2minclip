@@ -291,7 +291,11 @@ export default function Landing({ lang }) {
             <h2 id="why-heading" className="text-base font-semibold text-white mb-4">
               {t('landing.why_title')}
             </h2>
-            <p className="text-sm text-[#666] leading-relaxed max-w-2xl">{t('landing.why_text')}</p>
+            <div className="space-y-3 max-w-2xl">
+              {t('landing.why_text').split('\n\n').map((para, i) => (
+                <p key={i} className="text-sm text-[#666] leading-relaxed">{para}</p>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -302,7 +306,7 @@ export default function Landing({ lang }) {
               {t('landing.faq_title')}
             </h2>
             <dl className="grid md:grid-cols-2 gap-4">
-              {[1, 2, 3, 4, 5, 6].map((n) => (
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => (
                 <article key={n} className="bg-[#161616] border border-[#2a2a2a] rounded-xl px-4 py-4">
                   <dt className="text-sm font-medium text-[#ddd] mb-1.5">{t(`landing.faq_${n}_q`)}</dt>
                   <dd className="text-sm text-[#666] leading-relaxed">{t(`landing.faq_${n}_a`)}</dd>
