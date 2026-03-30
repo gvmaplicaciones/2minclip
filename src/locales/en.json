@@ -131,7 +131,16 @@
     "back_confirm_title": "Leave the editor?",
     "back_confirm_body": "You will lose all your work. This action cannot be undone.",
     "back_confirm_cancel": "Cancel",
-    "back_confirm_yes": "Yes, leave"
+    "back_confirm_yes": "Yes, leave",
+    "feedback_btn": "💬 Feedback",
+    "feedback_title": "Got any feedback?",
+    "feedback_type_bug": "🐛 Bug report",
+    "feedback_type_idea": "💡 Suggestion",
+    "feedback_type_other": "👍 Other",
+    "feedback_placeholder": "Tell us what happened or what you'd improve...",
+    "feedback_send": "Send",
+    "feedback_sending": "Sending...",
+    "feedback_success": "Thanks! Your message has been received."
   },
   "tutorial": {
     "title": "How to use 2minclip",

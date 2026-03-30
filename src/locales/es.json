@@ -131,7 +131,16 @@
     "back_confirm_title": "¿Salir del editor?",
     "back_confirm_body": "Vas a perder todo lo realizado. Esta acción no se puede deshacer.",
     "back_confirm_cancel": "Cancelar",
-    "back_confirm_yes": "Sí, salir"
+    "back_confirm_yes": "Sí, salir",
+    "feedback_btn": "💬 Feedback",
+    "feedback_title": "¿Tienes algún comentario?",
+    "feedback_type_bug": "🐛 Fallo técnico",
+    "feedback_type_idea": "💡 Sugerencia",
+    "feedback_type_other": "👍 Otro",
+    "feedback_placeholder": "Cuéntanos qué pasó o qué mejorarías...",
+    "feedback_send": "Enviar",
+    "feedback_sending": "Enviando...",
+    "feedback_success": "¡Gracias! Tu mensaje ha sido recibido."
   },
   "tutorial": {
     "title": "Cómo usar 2minclip",

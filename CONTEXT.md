@@ -7,7 +7,7 @@
 ## Estado actual
 
 - **Tarea en curso**: ninguna — todas las tareas principales completadas
-- **Última sesión**: 2026-03-28
+- **Última sesión**: 2026-03-30
 - **Próximo paso exacto**: revisar con el usuario qué mejoras o funciones nuevas quiere abordar a continuación.
 
 ---
@@ -194,6 +194,13 @@ public/ffmpeg-core.wasm             — FFmpeg WASM binary
   - `timelineMinWidth` incluye el texto más a la derecha en el cálculo de `minWidth`
   - Textos visibles/ocultos en `playTick` cada frame según `startTime`/`duration` del cabezal
   - Botón `+ Texto` en la barra de acción; deselección de texto al hacer click en fondo del canvas o timeline
+
+- [x] **Feedback button en el editor (2026-03-30)**
+  - `src/components/FeedbackButton.jsx` — botón fijo `bottom-4 left-4 z-40`, modal centrado con selector de tipo (bug/idea/other), textarea libre, envío a Formspree `mykbwewd`
+  - Al enviar: campos `tipo` + `mensaje` via POST JSON a Formspree; estado `sending` durante la petición
+  - Confirmación `feedback_success` durante 2 s y cierre automático del modal
+  - Claves i18n añadidas en `editor.*`: `feedback_btn`, `feedback_title`, `feedback_type_bug`, `feedback_type_idea`, `feedback_type_other`, `feedback_placeholder`, `feedback_send`, `feedback_sending`, `feedback_success` (ES + EN)
+  - Montado en `Editor.jsx` justo antes del `TutorialModal`
 
 - [x] **Tarea 8 — Exportar vídeo con FFmpeg.wasm**
   - `src/hooks/useExport.js` — hook completo: carga FFmpeg ESM desde `/public/ffmpeg-core.js` + `/ffmpeg-core.wasm` (archivos copiados de `node_modules/@ffmpeg/core/dist/esm/`); escribe todos los inputs al FS virtual; construye `filter_complex` con trim, setpts, scale/pad letterbox, concat, atrim, atempo, adelay, afade, amix, overlay; descarga MP4 H.264

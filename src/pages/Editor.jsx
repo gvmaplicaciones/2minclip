@@ -21,6 +21,7 @@ import { useCanvas } from '../hooks/useCanvas'
 import AdSlot from '../components/AdSlot'
 import { ExportModal } from '../components/ExportModal'
 import { TutorialModal } from '../components/TutorialModal'
+import FeedbackButton from '../components/FeedbackButton'
 import { readVideoMeta, generateThumbnail } from '../utils/videoMeta'
 
 export default function Editor() {
@@ -1680,6 +1681,9 @@ function EditorShell({ ratio, navigate }) {
         texts={texts}
         ratio={ratio}
       />
+
+      {/* ── FEEDBACK ── */}
+      <FeedbackButton />
 
       {/* ── TUTORIAL MODAL ── */}
       <TutorialModal
