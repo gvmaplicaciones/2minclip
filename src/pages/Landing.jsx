@@ -100,7 +100,7 @@ export default function Landing({ lang }) {
     navigate('/editor')
   }
 
-  const isEn = i18n.language === 'en'
+  const isEn = lang === 'en'
 
   return (
     <>
