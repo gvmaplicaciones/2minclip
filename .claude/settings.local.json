@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/gonve/Desktop/Proyectos/2minedit/**)",
+      "Bash(npm run:*)"
+    ]
+  }
+}
