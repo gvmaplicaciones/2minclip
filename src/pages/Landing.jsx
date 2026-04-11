@@ -130,7 +130,17 @@ export default function Landing({ lang }) {
             <span className="text-white">2min</span>
             <span className="text-[#e87040]">clip</span>
           </span>
-          <LanguageSwitcher />
+          <div className="flex items-center gap-4">
+            <a
+              href="https://2minedit.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-[#555] hover:text-[#e87040] transition-colors"
+            >
+              {isEn ? 'More tools →' : 'Más herramientas →'}
+            </a>
+            <LanguageSwitcher />
+          </div>
         </div>
       </nav>
 

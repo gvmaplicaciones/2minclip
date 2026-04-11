@@ -20,7 +20,7 @@ Modelo de referencia: ilovepdf.com — una home con todas las herramientas, cada
 
 ```
 2minedit.com/                    → Home con todas las herramientas
-2minedit.com/video-editor        → Editor de vídeo (migrado desde 2minclip.com)
+2minedit.com/video-editor        → Editor de vídeo (migrado desde 2minclip.com)1
 2minedit.com/compress-video      → Comprimir vídeo online
 2minedit.com/extract-audio       → Extraer audio de vídeo
 2minedit.com/video-to-gif        → Convertir vídeo a GIF
