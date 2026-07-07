@@ -132,10 +132,10 @@ export default function Landing({ lang }) {
         ) : (
           <meta name="description" content="Edita tus vídeos online gratis en 2 minutos. Corta, une, añade música y exporta en MP4 sin instalar nada ni crear cuenta." />
         )}
-        <link rel="canonical" href={isEn ? 'https://2minclip.com/en' : 'https://2minclip.com'} />
-        <link rel="alternate" hreflang="es" href="https://2minclip.com" />
-        <link rel="alternate" hreflang="en" href="https://2minclip.com/en" />
-        <link rel="alternate" hreflang="x-default" href="https://2minclip.com" />
+        <link rel="canonical" href={isEn ? 'https://www.2minclip.com/en' : 'https://www.2minclip.com'} />
+        <link rel="alternate" hreflang="es" href="https://www.2minclip.com" />
+        <link rel="alternate" hreflang="en" href="https://www.2minclip.com/en" />
+        <link rel="alternate" hreflang="x-default" href="https://www.2minclip.com" />
       </Helmet>
 
     <div className="min-h-screen bg-[#0f0f0f] text-white font-sans">
