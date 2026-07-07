@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { EditorProvider } from './context/EditorContext'
 import SessionWarningBar from './components/SessionWarningBar'
 import Landing from './pages/Landing'
+import LandingFeature from './pages/LandingFeature'
+import { FEATURE_LANDINGS, pathFor } from './config/featureLandings'
 
 const Editor = lazy(() => import('./pages/Editor'))
 
@@ -14,6 +16,20 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/en" element={<Landing lang="en" />} />
+          {FEATURE_LANDINGS.map((f) => (
+            <Route
+              key={`${f.key}-es`}
+              path={pathFor(f.key, 'es')}
+              element={<LandingFeature featureKey={f.key} lang="es" />}
+            />
+          ))}
+          {FEATURE_LANDINGS.map((f) => (
+            <Route
+              key={`${f.key}-en`}
+              path={pathFor(f.key, 'en')}
+              element={<LandingFeature featureKey={f.key} lang="en" />}
+            />
+          ))}
           <Route
             path="/editor"
             element={

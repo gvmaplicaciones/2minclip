@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Helmet } from 'react-helmet-async'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { useEditor } from '../context/EditorContext'
 import { readVideoMeta } from '../utils/videoMeta'
+import { FEATURE_LANDINGS, pathFor } from '../config/featureLandings'
 
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/webm']
 const ALLOWED_EXTS = ['.mp4', '.mov', '.webm']
@@ -360,6 +361,20 @@ export default function Landing({ lang }) {
             >
               {t('landing.start_editing')} →
             </button>
+          </div>
+        </section>
+
+        {/* ── OTRAS HERRAMIENTAS ── */}
+        <section className="border-t border-[#1a1a1a]">
+          <div className="max-w-6xl mx-auto px-5 md:px-10 py-14">
+            <h2 className="text-base font-semibold text-white mb-6">{t('landing.other_tools_title')}</h2>
+            <div className="flex flex-wrap gap-2">
+              {FEATURE_LANDINGS.map((f) => (
+                <Link key={f.key} to={pathFor(f.key, isEn ? 'en' : 'es')} className="pill hover:border-[#e87040] transition-colors">
+                  {t(`featureLandings.${f.key}.nav_title`)}
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
 
