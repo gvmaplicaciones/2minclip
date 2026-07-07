@@ -189,6 +189,7 @@
   "errors": {
     "invalid_format": "Unsupported format. Use MP4, MOV or WebM for video.",
     "invalid_audio_format": "Unsupported audio format. Use MP3, AAC or WAV.",
-    "file_too_large": "Clip too large ({{mb}} MB). Maximum is {{max}} MB per clip."
+    "file_too_large": "Clip too large ({{mb}} MB). Maximum is {{max}} MB per clip.",
+    "unreadable_video": "Couldn't read \"{{name}}\" — this video's codec may not be supported by your browser. Try exporting it as MP4 (H.264) before uploading."
   }
 }

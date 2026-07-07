@@ -59,27 +59,44 @@ export default function Landing({ lang }) {
     }
     if (toProcess.length === 0) return
 
-    const newClips = await Promise.all(
+    const results = await Promise.all(
       toProcess.map(async (f) => {
         const objectUrl = URL.createObjectURL(f)
         const { duration, thumbnail, videoWidth, videoHeight } = await readVideoMeta(f)
+        // Some videos (e.g. HEVC/H.265 files straight from an iPhone) can't be
+        // decoded by the browser's <video> element even though FFmpeg could
+        // process them later. Without this check they'd be added with
+        // duration 0 and silently produce an empty export.
+        if (!duration || !isFinite(duration) || duration <= 0) {
+          URL.revokeObjectURL(objectUrl)
+          return { error: f.name }
+        }
         return {
-          id: crypto.randomUUID(),
-          name: f.name,
-          file: f,
-          objectUrl,
-          duration,
-          thumbnail,
-          videoWidth,
-          videoHeight,
-          trimStart: 0,
-          speed: 1,
-          volume: 1,
-          muted: false,
+          clip: {
+            id: crypto.randomUUID(),
+            name: f.name,
+            file: f,
+            objectUrl,
+            duration,
+            thumbnail,
+            videoWidth,
+            videoHeight,
+            trimStart: 0,
+            speed: 1,
+            volume: 1,
+            muted: false,
+          },
         }
       })
     )
-    setPendingClips((prev) => [...prev, ...newClips])
+    const newClips = results.filter((r) => r.clip).map((r) => r.clip)
+    const failed = results.filter((r) => r.error)
+    if (failed.length > 0) {
+      setUploadError(t('errors.unreadable_video', { name: failed[0].error }))
+    }
+    if (newClips.length > 0) {
+      setPendingClips((prev) => [...prev, ...newClips])
+    }
   }
 
   function handleInputChange(e) {

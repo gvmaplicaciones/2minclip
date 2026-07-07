@@ -189,6 +189,7 @@
   "errors": {
     "invalid_format": "Formato no compatible. Usa MP4, MOV o WebM para vídeo.",
     "invalid_audio_format": "Formato de audio no compatible. Usa MP3, AAC o WAV.",
-    "file_too_large": "Clip demasiado grande ({{mb}} MB). El máximo es {{max}} MB por clip."
+    "file_too_large": "Clip demasiado grande ({{mb}} MB). El máximo es {{max}} MB por clip.",
+    "unreadable_video": "No se pudo leer \"{{name}}\" — puede que el códec de este vídeo no sea compatible con tu navegador. Prueba a exportarlo como MP4 (H.264) antes de subirlo."
   }
 }

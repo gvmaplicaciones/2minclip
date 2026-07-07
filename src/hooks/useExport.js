@@ -370,7 +370,17 @@ export function useExport() {
       })
       const cmd = buildCmd(ffArgs, fcStr, compositeV, compositeA)
       console.debug('[FFmpeg] cmd:', cmd.join(' '))
-      await ffmpeg.exec(cmd)
+      const ret = await ffmpeg.exec(cmd)
+      // ffmpeg.exec() resolves with the process exit code — it does NOT reject
+      // on failure. A non-zero code means the command failed (e.g. a decode
+      // error partway through), but output.mp4 may still exist on disk as a
+      // truncated/empty file. Without this check that broken file gets read,
+      // wrapped in a blob and handed to the user as a "successful" export.
+      if (ret !== 0) {
+        const err = new Error(`ffmpeg_exit_code_${ret}`)
+        err.ffmpegExitCode = ret
+        throw err
+      }
 
       // ── Done ─────────────────────────────────────────────────────────────────
       stopTicker()
@@ -407,8 +417,13 @@ export function useExport() {
       const msg = err instanceof Error
         ? err.message
         : (typeof err === 'string' ? err : JSON.stringify(err))
+      const lowerMsg = (msg || '').toLowerCase()
 
-      if (msg && (msg.includes(':a') || msg.includes('audio') || msg.includes('stream'))) {
+      if (err?.ffmpegExitCode !== undefined) {
+        setErrorMsg(tr('export.error_unknown'))
+      } else if (lowerMsg.includes('out of memory') || lowerMsg.includes('memory access out of bounds') || lowerMsg.includes('aborted(oom')) {
+        setErrorMsg(tr('export.error_memory'))
+      } else if (msg && (msg.includes(':a') || lowerMsg.includes('audio') || lowerMsg.includes('stream'))) {
         setErrorMsg(tr('export.error_audio'))
       } else {
         setErrorMsg(msg || tr('export.error_unknown'))

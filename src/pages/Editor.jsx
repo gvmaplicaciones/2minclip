@@ -599,6 +599,14 @@ function EditorShell({ ratio, navigate }) {
     setErrorMsg('')
 
     const { duration, thumbnail, videoWidth, videoHeight } = await readVideoMeta(file)
+    // Some videos (e.g. HEVC/H.265 files straight from an iPhone) can't be
+    // decoded by the browser's <video> element even though FFmpeg could
+    // process them later. Without this check they'd be added with duration 0
+    // and silently produce an empty export.
+    if (!duration || !isFinite(duration) || duration <= 0) {
+      setErrorMsg(t('errors.unreadable_video', { name: file.name }))
+      return
+    }
     const objectUrl = URL.createObjectURL(file)
 
     pushHistory()
