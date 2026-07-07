@@ -152,7 +152,7 @@ export default function Landing({ lang }) {
               href="https://2minedit.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-[#555] hover:text-[#e87040] transition-colors"
+              className="text-sm text-[#8a8a8a] hover:text-[#e87040] transition-colors"
             >
               {isEn ? 'More tools →' : 'Más herramientas →'}
             </a>
@@ -169,7 +169,7 @@ export default function Landing({ lang }) {
 
             {/* ── LEFT: texto ── */}
             <div className="mb-10 md:mb-0 md:pt-2">
-              <p className="text-sm text-[#555] mb-2">{t('landing.sub_tagline')}</p>
+              <p className="text-sm text-[#8a8a8a] mb-2">{t('landing.sub_tagline')}</p>
               <div className="w-10 h-0.5 bg-[#e87040] rounded mb-6" />
 
               <h1 className="text-3xl md:text-4xl font-bold leading-tight tracking-tight text-white mb-4">
@@ -187,7 +187,7 @@ export default function Landing({ lang }) {
               </div>
 
               {/* Features list — solo desktop */}
-              <ul className="hidden md:block space-y-3 text-sm text-[#666]">
+              <ul className="hidden md:block space-y-3 text-sm text-[#999999]">
                 <li className="flex items-center gap-2"><span className="text-[#e87040]">✓</span> {t('landing.feat1')}</li>
                 <li className="flex items-center gap-2"><span className="text-[#e87040]">✓</span> {t('landing.feat2')}</li>
                 <li className="flex items-center gap-2"><span className="text-[#e87040]">✓</span> {t('landing.feat3')}</li>
@@ -222,7 +222,7 @@ export default function Landing({ lang }) {
                   <div className="flex flex-col items-center gap-3 py-12 px-6 select-none">
                     <IconUpload />
                     <p className="text-sm font-medium text-[#ccc]">{t('landing.upload_title')}</p>
-                    <p className="text-xs text-[#555] text-center">{t('landing.upload_desc')}</p>
+                    <p className="text-xs text-[#8a8a8a] text-center">{t('landing.upload_desc')}</p>
                   </div>
                 ) : (
                   <div className="p-4 space-y-2" onClick={(e) => e.stopPropagation()}>
@@ -237,10 +237,10 @@ export default function Landing({ lang }) {
                           />
                         )}
                         <span className="text-xs text-[#ccc] truncate flex-1 min-w-0">{clip.name}</span>
-                        <span className="text-xs text-[#555] flex-shrink-0">{(clip.file.size / 1024 / 1024).toFixed(1)} MB</span>
-                        <span className="text-xs text-[#555] flex-shrink-0">{formatDuration(clip.duration)}</span>
+                        <span className="text-xs text-[#8a8a8a] flex-shrink-0">{(clip.file.size / 1024 / 1024).toFixed(1)} MB</span>
+                        <span className="text-xs text-[#8a8a8a] flex-shrink-0">{formatDuration(clip.duration)}</span>
                         <button
-                          className="text-[#555] hover:text-[#e87040] flex-shrink-0 text-lg leading-none ml-1"
+                          className="text-[#8a8a8a] hover:text-[#e87040] flex-shrink-0 text-lg leading-none ml-1"
                           onClick={() => setPendingClips((prev) => prev.filter((c) => c.id !== clip.id))}
                           aria-label="Eliminar clip"
                         >
@@ -249,7 +249,7 @@ export default function Landing({ lang }) {
                       </div>
                     ))}
                     <button
-                      className="flex items-center gap-2 text-xs text-[#555] hover:text-[#888] transition-colors pt-1"
+                      className="flex items-center gap-2 text-xs text-[#8a8a8a] hover:text-[#888] transition-colors pt-1"
                       onClick={() => fileInputRef.current?.click()}
                     >
                       <span className="text-base leading-none">+</span>
@@ -265,7 +265,7 @@ export default function Landing({ lang }) {
 
               {/* Format selector */}
               <div className="mb-4">
-                <p className="text-xs text-[#555] mb-2">{t('landing.format_label')}</p>
+                <p className="text-xs text-[#8a8a8a] mb-2">{t('landing.format_label')}</p>
                 <div className="flex gap-2">
                   {RATIOS.map(({ value, labelKey }) => (
                     <button
@@ -274,14 +274,14 @@ export default function Landing({ lang }) {
                       className={`flex-1 py-2 px-1 rounded-lg text-xs font-medium border transition-colors
                         ${selectedRatio === value
                           ? 'border-[#e87040] bg-[#1f1008] text-[#e87040]'
-                          : 'border-[#2a2a2a] bg-[#141414] text-[#666] hover:border-[#444]'
+                          : 'border-[#2a2a2a] bg-[#141414] text-[#999999] hover:border-[#444]'
                         }`}
                     >
                       {t(labelKey)}
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-[#444] mt-1.5">{t('landing.format_warning')}</p>
+                <p className="text-xs text-[#8a8a8a] mt-1.5">{t('landing.format_warning')}</p>
               </div>
 
               {/* CTA */}
@@ -320,7 +320,7 @@ export default function Landing({ lang }) {
             </h2>
             <div className="space-y-3 max-w-2xl">
               {t('landing.why_text').split('\n\n').map((para, i) => (
-                <p key={i} className="text-sm text-[#666] leading-relaxed">{para}</p>
+                <p key={i} className="text-sm text-[#999999] leading-relaxed">{para}</p>
               ))}
             </div>
           </div>
@@ -332,14 +332,22 @@ export default function Landing({ lang }) {
             <h2 id="faq-heading" className="text-base font-semibold text-white mb-6">
               {t('landing.faq_title')}
             </h2>
-            <dl className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((n) => (
-                <article key={n} className="bg-[#161616] border border-[#2a2a2a] rounded-xl px-4 py-4">
-                  <dt className="text-sm font-medium text-[#ddd] mb-1.5">{t(`landing.faq_${n}_q`)}</dt>
-                  <dd className="text-sm text-[#666] leading-relaxed">{t(`landing.faq_${n}_a`)}</dd>
-                </article>
+                <details key={n} className="group bg-[#161616] border border-[#2a2a2a] rounded-xl px-4 py-4">
+                  <summary className="flex items-center justify-between gap-3 cursor-pointer text-sm font-medium text-[#ddd] marker:content-none [&::-webkit-details-marker]:hidden">
+                    <span>{t(`landing.faq_${n}_q`)}</span>
+                    <svg
+                      className="shrink-0 w-3 h-3 text-[#8a8a8a] transition-transform group-open:rotate-180"
+                      viewBox="0 0 12 12" fill="none" aria-hidden="true"
+                    >
+                      <path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </summary>
+                  <p className="text-sm text-[#999999] leading-relaxed mt-2">{t(`landing.faq_${n}_a`)}</p>
+                </details>
               ))}
-            </dl>
+            </div>
           </div>
         </section>
 
@@ -360,7 +368,7 @@ export default function Landing({ lang }) {
       {/* ── FOOTER ── */}
       <footer className="border-t border-[#1a1a1a]">
         <div className="max-w-6xl mx-auto px-5 md:px-10 py-6 text-center">
-          <p className="text-xs text-[#333]">{t('landing.footer')}</p>
+          <p className="text-xs text-[#8a8a8a]">{t('landing.footer')}</p>
         </div>
       </footer>
 
@@ -384,7 +392,7 @@ function Step({ icon, title, desc }) {
       </div>
       <div>
         <p className="text-sm font-medium text-[#ddd] mb-1">{title}</p>
-        <p className="text-sm text-[#666] leading-relaxed">{desc}</p>
+        <p className="text-sm text-[#999999] leading-relaxed">{desc}</p>
       </div>
     </li>
   )

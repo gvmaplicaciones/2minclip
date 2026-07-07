@@ -1,0 +1,9 @@
+# 2minclip
+
+> 2minclip es un editor de vídeo online gratuito para cortar, unir, cambiar la velocidad y añadir música o texto a vídeos, sin marca de agua ni suscripción. Todo el procesamiento ocurre en el navegador del usuario.
+
+## Páginas principales
+
+- [Inicio (ES)](https://www.2minclip.com/): Editor de vídeo online gratuito — corta, une, cambia velocidad y añade música/texto a tus vídeos
+- [Home (EN)](https://www.2minclip.com/en): Free online video editor — cut, merge, change speed, add music/text to your videos
+- [Editor](https://www.2minclip.com/editor): Herramienta de edición completa en el navegador

@@ -56,9 +56,9 @@ export default function LanguageSwitcher() {
     >
       <CurrentFlag />
       <span className="text-[#e87040] font-bold">{labels[currentLang]}</span>
-      <span className="text-[#333]">→</span>
+      <span className="text-[#8a8a8a]">→</span>
       <OtherFlag />
-      <span className="text-[#555]">{labels[otherLang]}</span>
+      <span className="text-[#8a8a8a]">{labels[otherLang]}</span>
     </button>
   )
 }
